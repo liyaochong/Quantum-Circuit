@@ -21,7 +21,7 @@ class plotsetting(object):
 #==============================================================================
 def evolutionplot(target , result , tlist , setting = plotsetting()):
     
-    n_x = [] ; n_y = [] ; n_z = []
+    n_x = [] ; n_y = [] ; n_z = [];
     for t in range(0,len(tlist)):
         if setting.RF:
 #            -(g[1]*g[1]/(w_q[1]-w_q[0]))
