@@ -21,7 +21,10 @@ class plotsetting(object):
 #==============================================================================
 def evolutionplot(target , result , tlist , setting = plotsetting()):
     
-    n_x = [] ; n_y = [] ; n_z = []
+
+    n_x = [] ; n_y = [] ; n_z = [];
+
+
     for t in range(0,len(tlist)):
         if setting.RF:
 #            -(g[1]*g[1]/(w_q[1]-w_q[0]))
@@ -55,4 +58,6 @@ def evolutionplot(target , result , tlist , setting = plotsetting()):
     sphere.add_vectors([n_x[-1],n_y[-1],n_z[-1]])
     sphere.make_sphere() 
     plt.show()
+
 #==============================================================================
+
