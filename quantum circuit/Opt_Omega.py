@@ -40,20 +40,47 @@ import os
 
 
 def Opt_Omega(omega):
-    gateset = gatesetting()
+    quset = qusetting()
     Operator = ['X'  ,  'X' ]
-    psi0 = tensor(basis(N,n) , basis(level,1) ,  (basis(level,0)+1*basis(level,1)).unit())
-    target = sxm1*sxm0 * psi0   
-    gateset.omega = omega
-    result , tlist = gate_evolution(psi0,Operator,gateset = gateset)
-    fid0=fidelity(ptrace(result.states[-1],1), ptrace(target,1))
-    fid1=fidelity(ptrace(result.states[-1],2), ptrace(target,2))
+    qtype = 2
+    quset.qtype = qtype
+    if quset.qtype == 1:
+        a,sm,E_uc,E_e,E_g,sn,sx,sxm,sy,sym,sz,w01,w02 = initial(quset)
+        psi0 = tensor(basis(quset.N,n) , basis(3,1) ,  (basis(3,0)+1*basis(3,1)).unit())
+        target = sxm[1]*sxm[0] * psi0   
+        quset.omega = omega
+        result , tlist = gate_evolution(psi0,Operator,setting = quset)
+        
+        rf01 = np.exp(1j*(w02[0])*tlist[-1])*basis(3,2)*basis(3,2).dag()
+        rf02 = np.exp(1j*(w01[0])*tlist[-1])*basis(3,1)*basis(3,1).dag()
+        rf0 = basis(3,0)*basis(3,0).dag()+rf01+rf02
+        rf11 = np.exp(1j*(w02[1])*tlist[-1])*basis(3,2)*basis(3,2).dag()
+        rf12 = np.exp(1j*(w01[1])*tlist[-1])*basis(3,1)*basis(3,1).dag()
+        rf1 = basis(3,0)*basis(3,0).dag()+rf11+rf12
+        U = tensor(qeye(quset.N),rf0,rf1)
+    elif quset.qtype == 2:
+        sm,E_uc,E_e,E_g,sn,sx,sxm,sy,sym,sz,w01,w02 = initial(quset)
+        psi0 = tensor(basis(3,1) ,  (basis(3,0)+1*basis(3,1)).unit())
+        target = sxm[1]*sxm[0] * psi0   
+        quset.omega = omega
+        result , tlist = gate_evolution(psi0,Operator,setting = quset)
+        print('end')
+        rf01 = np.exp(1j*(w02[0])*tlist[-1])*basis(3,2)*basis(3,2).dag()
+        rf02 = np.exp(1j*(w01[0])*tlist[-1])*basis(3,1)*basis(3,1).dag()
+        rf0 = basis(3,0)*basis(3,0).dag()+rf01+rf02
+        rf11 = np.exp(1j*(w02[1])*tlist[-1])*basis(3,2)*basis(3,2).dag()
+        rf12 = np.exp(1j*(w01[1])*tlist[-1])*basis(3,1)*basis(3,1).dag()
+        rf1 = basis(3,0)*basis(3,0).dag()+rf11+rf12
+        U = tensor(rf0,rf1)
     
+    fid0=fidelity(ptrace(U*result.states[-1],0), ptrace(target,0))
+    fid1=fidelity(ptrace(U*result.states[-1],1), ptrace(target,1))
+    print([fid0,fid1,omega])
     return([fid0,fid1,omega])
 
 if __name__ == '__main__':
     starttime=clock()
-    g = linspace(0.0333,0.0334,10)
+    g = linspace(0.0333,0.0334,5)
 #    g = [0.033358578617]
     p = Pool(4)
     A = p.map(Opt_Omega,g)

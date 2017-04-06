@@ -24,10 +24,10 @@ from evolutionplot import *
 
 
 #==============================================================================
-def gate_evolution(psi0 , Operator , gateset = gatesetting()):
+def gate_evolution(psi0 , Operator , setting = qusetting()):
     options=Options()
-    options.atol=1e-12
-    options.rtol=1e-10
+#    options.atol=1e-12
+#    options.rtol=1e-10
     options.first_step=0.01
     options.num_cpus= 4
     options.nsteps=1e6
@@ -37,7 +37,9 @@ def gate_evolution(psi0 , Operator , gateset = gatesetting()):
 #==============================================================================
 
 #==============================================================================
-    H , args , tlist = GenerateH(Operator , setting = gateset)
+    H , args , tlist = GenerateH(Operator , setting)
+#    print(H)
+#    print(psi0)
     result = mesolve(H,psi0,tlist,[],[],args = args,options = options)
     return result , tlist
 #==============================================================================
