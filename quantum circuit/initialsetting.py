@@ -19,7 +19,7 @@ class qusetting(object):
         '''
         self.DRAG = True
         self.omega = 0.033348628532133037
-        self.delta = 0.069066
+        self.delta = 0.0688001 
         self.iswap_deltat = 361
         self.CZ_deltat = 751
         self.ramp = 129
