@@ -5,16 +5,18 @@ from qutip import *
 
 
 
-delta = 0.010 * 2 * np.pi
+delta = 0.004 * 2 * np.pi
 omega = 0.002 * 2 * np.pi
 
 wc = 5.0 * 2 *np.pi
 wd = wc+delta
-n = 10
+n = 20
 a = destroy(n)
-#H = -delta*a.dag()*a + omega*(a+a.dag())
-
-H = wc*a.dag()*a
+H = -delta*a.dag()*a + omega*(a+a.dag())
+Q = 350000
+kappa = wc/Q
+print(kappa)
+#H = wc*a.dag()*a
 #H1 = [2*omega*(a+a.dag()),'np.cos(wd*t)']
 #H = [H,H1]
 #print(H)
@@ -48,11 +50,12 @@ H = wc*a.dag()*a
 #axes.plot(n_x,n_p)
 #fig, axes = plt.subplots(1, 1, figsize=(10,6))
 #axes.plot(tlist,n_a)
+cops = []
+cops.append(np.sqrt(kappa)*a)
 
-
-psi0 = coherent(n,0.3)
-tlist = np.linspace(0,1,501) 
-result = mesolve(H,psi0,tlist,[],[(a+a.dag())/2,(a-a.dag())/2/1j,a.dag()*a])
+psi0 = coherent(n,0)
+tlist = np.linspace(0,250,501) 
+result = mesolve(H,psi0,tlist,cops,[(a+a.dag())/2,(a-a.dag())/2/1j,a.dag()*a])
 
 fig, axes = plt.subplots(1, 1, figsize=(10,6))
 axes.plot(result.expect[0],result.expect[1])

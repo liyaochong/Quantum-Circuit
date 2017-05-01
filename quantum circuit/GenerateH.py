@@ -69,11 +69,20 @@ def GenerateH(Operator , setting = qusetting()):
         D_t=[]
         for inxc in range(0,lenc):# import drive
             if Operator[inxc][0]=='X':
-                w_t_i,D_t_i,args_i=Gate_rx(inxc,t0,t1,setting = setting)
+                if len(Operator[inxc])==1:
+                    w_t_i,D_t_i,args_i=Gate_rx(inxc,t0,t1,setting = setting)
+                else:
+                    w_t_i,D_t_i,args_i=Gate_rx(inxc,t0,t1,phi=np.pi*float(Operator[inxc][1:]),setting = setting)
             elif Operator[inxc][0]=='Y':
-                w_t_i,D_t_i,args_i=Gate_ry(inxc,t0,t1,setting = setting)
+                if len(Operator[inxc])==1:
+                    w_t_i,D_t_i,args_i=Gate_ry(inxc,t0,t1,setting = setting)
+                else:
+                    w_t_i,D_t_i,args_i=Gate_ry(inxc,t0,t1,phi=np.pi*float(Operator[inxc][1:]),setting = setting)
             elif Operator[inxc][0]=='Z':
-                w_t_i,D_t_i,args_i=Gate_rz(inxc,t0,t1)
+                if len(Operator[inxc])==1:
+                    w_t_i,D_t_i,args_i=Gate_rz(inxc,t0,t1,setting = setting)
+                else:
+                    w_t_i,D_t_i,args_i=Gate_rz(inxc,t0,t1,phi=np.pi*float(Operator[inxc][1:]),setting = setting)
             elif Operator[inxc][0]=='i':
                 w_t_i,D_t_i,args_i=Gate_iSWAP(inxc,int(Operator[inxc][5:]),t0,t1,setting = setting)
             elif Operator[inxc][0]=='H':
