@@ -68,15 +68,15 @@ def Two_GeoCZ(ome = 8.77841):
     Q = 35000
     kappa = w_c/Q
     kappa_phi = w_c/Q
-    gamma = np.array([1.0/10 , 1.0/10]) *1e-3
-    gamma_phi = np.array([1.0/10 , 1.0/10]) *1e-3
+    gamma = np.array([1.0/10 , 1.0/10]) *1e-2
+    gamma_phi = np.array([1.0/10 , 1.0/10]) *1e-2
     n_th = 0.01
     cops = []
-#    for ii in range(2):
-#        
+    for ii in range(2):
+        
 #        cops.append(np.sqrt(gamma[ii] * (1+n_th)) * sm[ii])
 #        cops.append(np.sqrt(gamma[ii] * n_th) * sm[ii].dag())
-#        cops.append(np.sqrt(gamma_phi[ii]) * sm[ii].dag()*sm[ii])
+        cops.append(np.sqrt(gamma_phi[ii]) * sm[ii].dag()*sm[ii])
 #    cops.append(np.sqrt(kappa * (1+n_th)) * a)
 #    cops.append(np.sqrt(kappa * n_th) * a.dag())
 #    cops.append(np.sqrt(kappa_phi) * a.dag()*a)
@@ -104,72 +104,72 @@ def Two_GeoCZ(ome = 8.77841):
     '''
     PLot
     '''
-#    n_x0 = [] ; n_y0 = [] ; n_z0 = [];n_a = [];nax = [];nay = [];
-#    n_x1 = [] ; n_y1 = [] ; n_z1 = [];
-#    
-#    for t in range(0,len(tlist)):
-#        U = 'basis(N,0)*basis(N,0).dag()'
-#        for i in range(1,n):
-#            U = U+'+np.exp(1j*'+str(i)+'*wd*tlist[t])*basis(N,'+str(i)+')*basis(N,'+str(i)+').dag()'      
-#        U = eval(U)
-#        RF1 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(Ee[2]-Ee[0])*tlist[t])*basis(3,1)*basis(3,1).dag()+np.exp(1j*(Ee[7]-Ee[0])*tlist[t])*basis(3,2)*basis(3,2).dag()
-#        RF2 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(Ee[3]-Ee[0])*tlist[t])*basis(3,1)*basis(3,1).dag()+np.exp(1j*(Ee[9]-Ee[0])*tlist[t])*basis(3,2)*basis(3,2).dag()
-#        U = tensor(U,RF1,RF2)
-#        
-#        opx0 = U.dag()*sx[0]*U
-#        opy0 = U.dag()*sy[0]*U
-#        opz0 = sz[0]
-#        opx1 = U.dag()*sx[1]*U
-#        opy1 = U.dag()*sy[1]*U
-#        opz1 = sz[1]
-#        opnx = U.dag()*(a+a.dag())*U/2
-#        opny = U.dag()*(a-a.dag())/2/1J*U
-#        n_x0.append(expect(opx0,result.states[t]))
-#        n_y0.append(expect(opy0,result.states[t]))
-#        n_z0.append(expect(opz0,result.states[t]))
-#        n_x1.append(expect(opx1,result.states[t]))
-#        n_y1.append(expect(opy1,result.states[t]))
-#        n_z1.append(expect(opz1,result.states[t]))
-#        n_a.append(expect(a.dag()*a,result.states[t]))
-#        nax.append(expect(opnx,result.states[t]))
-#        nay.append(expect(opny,result.states[t]))
-#        
-#        
-#    fig, axes = plt.subplots(3, 1, figsize=(10,6))
-#            
-#    axes[0].plot(tlist, n_x0, label='X');axes[0].set_ylim([-1.05,1.05])
-#    axes[1].plot(tlist, n_y0, label='Y');axes[1].set_ylim([-1.05,1.05])
-#    axes[2].plot(tlist, n_z0, label='Z');axes[2].set_ylim([-1.05,1.05])
-#    
-#    fig, axes = plt.subplots(3, 1, figsize=(10,6))
-#            
-#    axes[0].plot(tlist, n_x1, label='X');axes[0].set_ylim([-1.05,1.05])
-#    axes[1].plot(tlist, n_y1, label='Y');axes[1].set_ylim([-1.05,1.05])
-#    axes[2].plot(tlist, n_z1, label='Z');axes[2].set_ylim([-1.05,1.05])
-#    
-#    
-#    fig, axes = plt.subplots(2, 1, figsize=(10,6))
-#    axes[0].plot(nax, nay);
-#    axes[1].plot(tlist, n_a, label='N');
-#    
-#    
-#    sphere = Bloch()
-#    sphere.add_points([n_x0 , n_y0 , n_z0])
-#    sphere.add_vectors([n_x0[-1],n_y0[-1],n_z0[-1]])
-#    sphere.make_sphere() 
-#    plt.show()
-#    sphere = Bloch()
-#    sphere.add_points([n_x1 , n_y1 , n_z1])
-#    sphere.add_vectors([n_x1[-1],n_y1[-1],n_z1[-1]])
-#    sphere.make_sphere() 
-#    plt.show()
+    n_x0 = [] ; n_y0 = [] ; n_z0 = [];n_a = [];nax = [];nay = [];
+    n_x1 = [] ; n_y1 = [] ; n_z1 = [];
+    
+    for t in range(0,len(tlist)):
+        U = 'basis(N,0)*basis(N,0).dag()'
+        for i in range(1,N):
+            U = U+'+np.exp(1j*'+str(i)+'*wd*tlist[t])*basis(N,'+str(i)+')*basis(N,'+str(i)+').dag()'      
+        U = eval(U)
+        RF1 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(Ee[2]-Ee[0])*tlist[t])*basis(3,1)*basis(3,1).dag()+np.exp(1j*(Ee[7]-Ee[0])*tlist[t])*basis(3,2)*basis(3,2).dag()
+        RF2 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(Ee[3]-Ee[0])*tlist[t])*basis(3,1)*basis(3,1).dag()+np.exp(1j*(Ee[9]-Ee[0])*tlist[t])*basis(3,2)*basis(3,2).dag()
+        U = tensor(U,RF1,RF2)
+        
+        opx0 = U.dag()*sx[0]*U
+        opy0 = U.dag()*sy[0]*U
+        opz0 = sz[0]
+        opx1 = U.dag()*sx[1]*U
+        opy1 = U.dag()*sy[1]*U
+        opz1 = sz[1]
+        opnx = U.dag()*(a+a.dag())*U/2
+        opny = U.dag()*(a-a.dag())/2/1J*U
+        n_x0.append(expect(opx0,result.states[t]))
+        n_y0.append(expect(opy0,result.states[t]))
+        n_z0.append(expect(opz0,result.states[t]))
+        n_x1.append(expect(opx1,result.states[t]))
+        n_y1.append(expect(opy1,result.states[t]))
+        n_z1.append(expect(opz1,result.states[t]))
+        n_a.append(expect(a.dag()*a,result.states[t]))
+        nax.append(expect(opnx,result.states[t]))
+        nay.append(expect(opny,result.states[t]))
+        
+        
+    fig, axes = plt.subplots(3, 1, figsize=(10,6))
+            
+    axes[0].plot(tlist, n_x0, label='X');axes[0].set_ylim([-1.05,1.05])
+    axes[1].plot(tlist, n_y0, label='Y');axes[1].set_ylim([-1.05,1.05])
+    axes[2].plot(tlist, n_z0, label='Z');axes[2].set_ylim([-1.05,1.05])
+    
+    fig, axes = plt.subplots(3, 1, figsize=(10,6))
+            
+    axes[0].plot(tlist, n_x1, label='X');axes[0].set_ylim([-1.05,1.05])
+    axes[1].plot(tlist, n_y1, label='Y');axes[1].set_ylim([-1.05,1.05])
+    axes[2].plot(tlist, n_z1, label='Z');axes[2].set_ylim([-1.05,1.05])
+    
+    
+    fig, axes = plt.subplots(2, 1, figsize=(10,6))
+    axes[0].plot(nax, nay);
+    axes[1].plot(tlist, n_a, label='N');
+    
+    
+    sphere = Bloch()
+    sphere.add_points([n_x0 , n_y0 , n_z0])
+    sphere.add_vectors([n_x0[-1],n_y0[-1],n_z0[-1]])
+    sphere.make_sphere() 
+    plt.show()
+    sphere = Bloch()
+    sphere.add_points([n_x1 , n_y1 , n_z1])
+    sphere.add_vectors([n_x1[-1],n_y1[-1],n_z1[-1]])
+    sphere.make_sphere() 
+    plt.show()
     #==============================================================================
     #==============================================================================
     '''
     fidelity
     '''
     U = 'basis(N,0)*basis(N,0).dag()'
-    for i in range(1,n):
+    for i in range(1,N):
         U = U+'+np.exp(1j*'+str(i)+'*wd*tlist[-1])*basis(N,'+str(i)+')*basis(N,'+str(i)+').dag()'      
     U = eval(U)
     RF1 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(Ee[2]-Ee[0])*tlist[-1])*basis(3,1)*basis(3,1).dag()+np.exp(1j*(Ee[7]-Ee[0])*tlist[-1])*basis(3,2)*basis(3,2).dag()
@@ -184,14 +184,14 @@ def Two_GeoCZ(ome = 8.77841):
     fid = fidelity(U*result.states[-1]*result.states[-1].dag()*U.dag(),target)
     print('fidelity = ',fid)
     #==============================================================================
-    return(1-fid)
+    return(1-fid,result.states)
 
 if __name__ == '__main__':
     
 
     starttime = clock()
-#    Two_GeoCZ(ome = 8.77841)
-    fid=fminbound(Two_GeoCZ,8.0,100.0, xtol=1e-07,disp=3)
+    fid,state = Two_GeoCZ(ome = 8.77841)
+#    fid=fminbound(Two_GeoCZ,8.0,100.0, xtol=1e-07,disp=3)
     
     endtime = clock()
     print('Time used :',endtime-starttime,'s' )

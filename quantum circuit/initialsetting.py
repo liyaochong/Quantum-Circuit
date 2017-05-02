@@ -34,7 +34,7 @@ class qusetting(object):
         qubit
         '''
         self.w_c = 7.0  * 2 * np.pi  # cavity frequency
-        self.w_q = np.array([ 6.0 , 8.2]) * 2 * np.pi
+        self.w_q = np.array([ 7.5 , 8.2]) * 2 * np.pi
         self.g = np.array([0.03 , 0.03]) * 2 * np.pi
         self.eta_q = np.array([-0.25 , -0.25]) * 2 * np.pi
         self.N = 3              # number of cavity fock states
@@ -119,6 +119,7 @@ def initial(setting = qusetting()):
 ##        E_q.append(En[JJ+1]-En[0])
 ##        print(E_q[II]/2/np.pi)
 ##        print(En/2/np.pi)
+        print(En/2/np.pi)
         return(a,sm,E_uc,E_e,E_g,sn,sx,sxm,sy,sym,sz,En)
 #==============================================================================        
     elif setting.qtype == 2:#two qubits,coupled directly

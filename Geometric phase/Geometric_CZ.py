@@ -46,7 +46,7 @@ def Geometric_CZ(ome = 8.63552):
     '''
     dissipation
     '''
-    Q = 35000
+    Q = 10000
     kappa = w_c/Q
     kappa_phi = w_c/Q
     gamma = 1.0/10*1e-3
@@ -57,8 +57,8 @@ def Geometric_CZ(ome = 8.63552):
 #    cops.append(np.sqrt(gamma * (1+n_th)) * sm)
 #    cops.append(np.sqrt(gamma * n_th) * sm.dag())
 #    cops.append(np.sqrt(gamma_phi) * sm.dag()*sm)
-    cops.append(np.sqrt(kappa * (1+n_th)) * a)
-    cops.append(np.sqrt(kappa * n_th) * a.dag())
+#    cops.append(np.sqrt(kappa * (1+n_th)) * a)
+#    cops.append(np.sqrt(kappa * n_th) * a.dag())
 #    cops.append(np.sqrt(kappa_phi) * a.dag()*a)
     #==============================================================================
     '''
@@ -105,7 +105,7 @@ def Geometric_CZ(ome = 8.63552):
     
     for t in range(0,len(tlist)):
         U = 'basis(N,0)*basis(N,0).dag()'
-        for i in range(1,n):
+        for i in range(1,N):
             U = U+'+np.exp(1j*'+str(i)+'*wd*tlist[t])*basis(N,'+str(i)+')*basis(N,'+str(i)+').dag()'      
         U = eval(U)
         RF = basis(3,0)*basis(3,0).dag()+np.exp(1j*(Ee[2]-Ee[0])*tlist[t])*basis(3,1)*basis(3,1).dag()+np.exp(1j*(Ee[5]-Ee[0])*tlist[t])*basis(3,2)*basis(3,2).dag()
@@ -147,7 +147,7 @@ def Geometric_CZ(ome = 8.63552):
     fidelity
     '''
     U = 'basis(N,0)*basis(N,0).dag()'
-    for i in range(1,n):
+    for i in range(1,N):
         U = U+'+np.exp(1j*'+str(i)+'*wd*tlist[-1])*basis(N,'+str(i)+')*basis(N,'+str(i)+').dag()'      
     U = eval(U)
     RF = basis(3,0)*basis(3,0).dag()+np.exp(1j*(Ee[2]-Ee[0])*tlist[-1])*basis(3,1)*basis(3,1).dag()+np.exp(1j*(Ee[5]-Ee[0])*tlist[-1])*basis(3,2)*basis(3,2).dag()
@@ -161,7 +161,7 @@ if __name__ == '__main__':
     
 
     starttime = clock()
-    Geometric_CZ(ome = 8.63552)
+    Geometric_CZ(ome = 8)
 #    fid=fminbound(Geometric_CZ,6.0,10.0, xtol=1e-07,disp=3)
     
     endtime = clock()

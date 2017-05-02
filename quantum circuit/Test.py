@@ -17,22 +17,22 @@ starttime=clock()
 
 
 quset = qusetting()
-#Operator = ['CZ1','I']
-Operator = ['Y'  ,  'X' ]
+Operator = ['CZ1','I']
+#Operator = ['Y'  ,  'X' ]
 #Operator = ['iswap1'  ,  'I' ]
 #psi0 = tensor(basis(quset.N,quset.n) , (basis(3,0)+basis(3,1)).unit() ,  (basis(3,0)-basis(3,1)).unit())
-psi0 = tensor(basis(quset.N,quset.n)  ,  basis(3,1), (basis(3,0)+basis(3,1)).unit())
-#psi0 = tensor(basis(quset.N,quset.n) , (basis(3,0)+basis(3,1)).unit() ,  (basis(3,0)-basis(3,1)).unit())
-psi0 = tensor(basis(quset.N,quset.n) , basis(3,1) ,  basis(3,0))
+#psi0 = tensor(basis(quset.N,quset.n)  ,  basis(3,1), (basis(3,0)+basis(3,1)).unit())
+psi0 = tensor(basis(quset.N,quset.n) , (basis(3,0)+basis(3,1)).unit() ,  (basis(3,1)).unit())
+#psi0 = tensor(basis(quset.N,quset.n) , basis(3,1) ,  basis(3,0))
 #psi0 = tensor(basis(3,1) ,  (basis(3,0)+basis(3,1)).unit())
-quset.DRAG = False
+quset.DRAG = True
 #quset.omega = 0.033243043043
 #quset.CZ_deltat = 323.5
 #quset.CZ_deltat = 600
 #quset.iswap_deltat = 20
 quset.qtype = 1 
 sm,E_uc,E_e,E_g,sn,sx,sxm,sy,sym,sz,En = initial(quset)[-11:]
-quset.Dis = False
+#quset.Dis = False
 result , tlist = gate_evolution(psi0 , Operator , setting = quset)
 #print(ptrace(result.states[250],1))
 evolutionplot(0 , result , tlist , setting = quset)
@@ -49,9 +49,9 @@ rf1 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(En[1])*tlist[-1])*basis(3,1)*basis(
 U = tensor(qeye(3),rf0,rf1)
 
 #target = sxm[0]*sxm[1]*psi0
-#target = tensor(basis(quset.N,quset.n) , (basis(3,0)-basis(3,1)).unit() ,  basis(3,1))
+target = tensor(basis(quset.N,quset.n) , (basis(3,0)-basis(3,1)).unit() ,  basis(3,1))
 #target = tensor(basis(quset.N,quset.n)  ,  basis(3,1), (basis(3,0)-basis(3,1)).unit())
-target = tensor(basis(quset.N,quset.n) , (basis(3,0)-basis(3,1)).unit() ,  (basis(3,0)+basis(3,1)).unit())
+#target = tensor(basis(quset.N,quset.n) , (basis(3,0)-basis(3,1)).unit() ,  (basis(3,0)+basis(3,1)).unit())
 #target = tensor(basis(3,1), (basis(3,0)-basis(3,1)).unit())
 #tar = (tensor(basis(3,0) , basis(3,0))+tensor(basis(3,1) , basis(3,0))+tensor(basis(3,0) , basis(3,1))-tensor(basis(3,1) , basis(3,1))).unit()
 #target = tensor(basis(quset.N,quset.n),tar)
