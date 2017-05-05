@@ -12,7 +12,7 @@ from pylab import *
 from gate import *
 from initialsetting import *
 
-def dissipation(setting = qusetting()):
+def dissipation(setting = qusetting()):#生成退相干项
     c_op_list = []
     ## Base Temperature(K)
     n_th=0.01
@@ -25,8 +25,8 @@ def dissipation(setting = qusetting()):
     if setting.Dis==True:
         sm,E_uc,E_e,E_g,sn,sx,sxm,sy,sym,sz,En = initial(setting)[-11:]
         for II in range(0,2):
-            c_op_list.append(np.sqrt(gamma[II] * (1+n_th)) * sm[II])
-            c_op_list.append(np.sqrt(gamma[II] * n_th) * sm[II].dag())
-            c_op_list.append(np.sqrt(gamma_phi[II]) * sm[II].dag()*sm[II])
+            c_op_list.append(np.sqrt(gamma[II] * (1+n_th)) * sm[II])#湮灭
+            c_op_list.append(np.sqrt(gamma[II] * n_th) * sm[II].dag())#激发
+            c_op_list.append(np.sqrt(gamma_phi[II]) * sm[II].dag()*sm[II])#相位退相干
             
     return (c_op_list)

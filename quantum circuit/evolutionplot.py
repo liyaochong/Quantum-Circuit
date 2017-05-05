@@ -14,20 +14,17 @@ from initialsetting import *
 
 
 #==============================================================================
-def evolutionplot(target , result , tlist , setting = qusetting()):
+def evolutionplot(target , result , tlist , setting = qusetting()):#画出演化过程
     
     n_x = [] ; n_y = [] ; n_z = [];n_a = []
-    if setting.qtype == 1:
+    if setting.qtype == 1:#三能级；有腔
         a,sm,E_uc,E_e,E_g,sn,sx,sxm,sy,sym,sz,En = initial(setting)
         for t in range(0,len(tlist)):
-            if setting.RF:
-    #            -(g[1]*g[1]/(w_q[1]-w_q[0]))
+            if setting.RF:#旋转坐标系
     
-#                rf01 =np.exp(1j*(w02[0])*tlist[t])*basis(3,2)*basis(3,2).dag()
-#                rf02 = np.exp(1j*(En[0])*tlist[t])*basis(3,1)*basis(3,1).dag()
+            #    rf01 =np.exp(1j*(w02[0])*tlist[t])*basis(3,2)*basis(3,2).dag()
                 rf0 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(En[0])*tlist[t])*basis(3,1)*basis(3,1).dag()
 #                rf11 = np.exp(1j*(w02[1])*tlist[t])*basis(3,2)*basis(3,2).dag()
-#                rf12 = np.exp(1j*(En[1])*tlist[t])*basis(3,1)*basis(3,1).dag()
                 rf1 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(En[1])*tlist[t])*basis(3,1)*basis(3,1).dag()
                 U = tensor(qeye(setting.N),rf0,rf1)
                 
@@ -39,11 +36,11 @@ def evolutionplot(target , result , tlist , setting = qusetting()):
     #            rf1 = basis(3,0)*basis(3,0).dag()+rf11+rf12
     #            U = tensor(qeye(N),rf0,rf1)
                 
-                opx = U.dag()*eval('sx['+str(eval('target'))+']')*U
+                opx = U.dag()*eval('sx['+str(eval('target'))+']')*U#算符变换
                 opy = U.dag()*eval('sy['+str(eval('target'))+']')*U
                 opz = eval('1-2*sn['+str(eval('target'))+']')
                 
-            else:
+            else:#非旋转坐标系
                 opx = eval('sx['+str(eval('target'))+']')
                 opy = eval('sy['+str(eval('target'))+']')
                 opz = eval('1-2*sn['+str(eval('target'))+']')
@@ -52,7 +49,7 @@ def evolutionplot(target , result , tlist , setting = qusetting()):
             n_x.append(expect(opx,result.states[t]))
             n_y.append(expect(opy,result.states[t]))
             n_z.append(expect(opz,result.states[t]))
-            n_a.append(expect(a.dag()*a,result.states[t]))
+            n_a.append(expect(a.dag()*a,result.states[t]))#X，Y，Z，N的演化过程
             
         fig, axes = plt.subplots(4, 1, figsize=(10,6))
         
@@ -61,29 +58,18 @@ def evolutionplot(target , result , tlist , setting = qusetting()):
         axes[2].plot(tlist, n_z, label='Z');axes[2].set_ylim([-1.05,1.05])
         axes[3].plot(tlist, n_a, label='N');axes[3].set_ylim([-1.05,1.05])
 #        print(n_y)
-    elif setting.qtype == 2:
+    elif setting.qtype == 2:#三能级；无腔
         
         sm,E_uc,E_e,E_g,sn,sx,sxm,sy,sym,sz,En = initial(setting)
         
         for t in range(0,len(tlist)):
             if setting.RF:
-    #            -(g[1]*g[1]/(w_q[1]-w_q[0]))
     
 #                rf01 =np.exp(1j*(w02[0])*tlist[t])*basis(3,2)*basis(3,2).dag()
-#                rf02 = np.exp(1j*(En[0])*tlist[t])*basis(3,1)*basis(3,1).dag()
                 rf0 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(En[0])*tlist[t])*basis(3,1)*basis(3,1).dag()
 #                rf11 = np.exp(1j*(En[1])*tlist[t])*basis(3,2)*basis(3,2).dag()
-#                rf12 = np.exp(1j*(En[1])*tlist[t])*basis(3,1)*basis(3,1).dag()
                 rf1 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(En[1])*tlist[t])*basis(3,1)*basis(3,1).dag()
                 U = tensor(rf0,rf1)
-                
-    #            rf01 =np.exp(1j*(2*w_q[0]-eta_q[0])*tlist[t])*basis(3,2)*basis(3,2).dag()
-    #            rf02 = np.exp(1j*(w_q[0])*tlist[t])*basis(3,1)*basis(3,1).dag()
-    #            rf0 = basis(3,0)*basis(3,0).dag()+rf01+rf02
-    #            rf11 = np.exp(1j*(2*w_q[1]-eta_q[1])*tlist[t])*basis(3,2)*basis(3,2).dag()
-    #            rf12 = np.exp(1j*(w_q[1])*tlist[t])*basis(3,1)*basis(3,1).dag()
-    #            rf1 = basis(3,0)*basis(3,0).dag()+rf11+rf12
-    #            U = tensor(qeye(N),rf0,rf1)
                 
                 opx = U.dag()*eval('sx['+str(eval('target'))+']')*U
                 opy = U.dag()*eval('sy['+str(eval('target'))+']')*U
@@ -104,7 +90,7 @@ def evolutionplot(target , result , tlist , setting = qusetting()):
         axes[0].plot(tlist, n_x, label='X')
         axes[1].plot(tlist, n_y, label='Y')
         axes[2].plot(tlist, n_z, label='Z')
-    sphere = Bloch()
+    sphere = Bloch()#Bloch球
     sphere.add_points([n_x , n_y , n_z])
     sphere.add_vectors([n_x[-1],n_y[-1],n_z[-1]])
     sphere.make_sphere() 

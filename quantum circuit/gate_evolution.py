@@ -15,16 +15,8 @@ from GenerateH import *
 from evolutionplot import *
 from dissipation import *
 
-
-#from time import clock
-#starttime=clock()
-
-
-
-
-
 #==============================================================================
-def gate_evolution(psi0 , Operator , setting = qusetting()):
+def gate_evolution(psi0 , Operator , setting = qusetting()):#体系的演化过程
     options=Options()
 #    options.atol=1e-11
 #    options.rtol=1e-9
@@ -47,20 +39,3 @@ def gate_evolution(psi0 , Operator , setting = qusetting()):
     return result , tlist
 #==============================================================================
 
-
-
-#==============================================================================    
-#Operator = ['X'  ,  'X' ]
-##H = HC + Hq0 + Hq1 + Hcoupling
-#
-#
-##result = mesolve(H,psi0,tlist,[],[sxm0,sym0,sz0,sn0,E_uc0,sxm1,sym1,sz1,sn1,a.dag()*a,E_uc1])
-#
-#
-#evolutionplot(0 , result , setting = plotsetting)
-#evolutionplot(1 , result , setting = plotsetting)
-
-#==============================================================================  
-
-#finishtime=clock()
-#print ('Time used: ', (finishtime-starttime), 's')
