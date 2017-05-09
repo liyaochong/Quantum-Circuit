@@ -40,29 +40,24 @@ import os
 
 
 def Opt_Omega(omega):
-    '''
-    对X,Y门进行参数标定
-    输入X,Y的可变参量omega
-    返回保真度和对应的参量
-    '''
     quset = qusetting()
     Operator = ['X'  ,  'X' ]
-    qtype = 1
+    qtype = 2
     quset.qtype = qtype
     if quset.qtype == 1:
         a,sm,E_uc,E_e,E_g,sn,sx,sxm,sy,sym,sz,En = initial(quset)
         psi0 = tensor(basis(quset.N,n) , basis(3,1) ,  (basis(3,0)+1*basis(3,1)).unit())
-        #初态
         target = sxm[1]*sxm[0] * psi0   
-        #目标状态
         quset.omega = omega
         result , tlist = gate_evolution(psi0,Operator,setting = quset)
         
-
+#        rf01 = np.exp(1j*(w02[0])*tlist[-1])*basis(3,2)*basis(3,2).dag()
+#        rf02 = np.exp(1j*(En[0])*tlist[-1])*basis(3,1)*basis(3,1).dag()
         rf0 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(En[0])*tlist[-1])*basis(3,1)*basis(3,1).dag()
+#        rf11 = np.exp(1j*(w02[1])*tlist[-1])*basis(3,2)*basis(3,2).dag()
+#        rf12 = np.exp(1j*(En[1])*tlist[-1])*basis(3,1)*basis(3,1).dag()
         rf1 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(En[1])*tlist[-1])*basis(3,1)*basis(3,1).dag()
         U = tensor(qeye(quset.N),rf0,rf1)
-
         fid=fidelity(U*result.states[-1]*result.states[-1].dag()*U.dag(), target)
     elif quset.qtype == 2:
         sm,E_uc,E_e,E_g,sn,sx,sxm,sy,sym,sz,En = initial(quset)
@@ -70,24 +65,29 @@ def Opt_Omega(omega):
         target = sxm[1]*sxm[0] * psi0   
         quset.omega = omega
         result , tlist = gate_evolution(psi0,Operator,setting = quset)
-
+#        print('end')
+#        rf01 = np.exp(1j*(w02[0])*tlist[-1])*basis(3,2)*basis(3,2).dag()
+#        rf02 = np.exp(1j*(En[0])*tlist[-1])*basis(3,1)*basis(3,1).dag()
         rf0 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(En[0])*tlist[-1])*basis(3,1)*basis(3,1).dag()
+#        rf11 = np.exp(1j*(w02[1])*tlist[-1])*basis(3,2)*basis(3,2).dag()
+#        rf12 = np.exp(1j*(En[1])*tlist[-1])*basis(3,1)*basis(3,1).dag()
         rf1 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(En[1])*tlist[-1])*basis(3,1)*basis(3,1).dag()
         U = tensor(rf0,rf1)
-
         fid=fidelity(U*result.states[-1]*result.states[-1].dag()*U.dag(), target)
     
+#    print([fid0,fid1,omega])
     return([fid,omega])
 
 if __name__ == '__main__':
     starttime=clock()
     g = linspace(0.0333,0.0334,5)
+#    g = [0.033358578617]
     p = Pool(4)
     A = p.map(Opt_Omega,g)
     p.close()
     p.join()
-    fid =  np.array([x[0] for x in A])#取输出中的第一列
-    omega = np.array([x[1] for x in A])#取输出中的第二列
+    fid =  np.array([x[0] for x in A])
+    omega = np.array([x[1] for x in A])
     opt = omega[np.where(fid== max(fid))]
     
     print(opt[0]  , max(fid))

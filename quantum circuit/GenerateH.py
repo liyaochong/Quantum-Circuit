@@ -16,11 +16,15 @@ from pylab import *
 from gate import *
 from initialsetting import *
 
-def SingleOpTime(Operator,setting = qusetting()):#确定每一步的演化时间
+def SingleOpTime(Operator,setting = qusetting()):
     lenc = len(Operator)
     time = 0
     for inxc in range(0,lenc):
         if Operator[inxc][0]=='X':
+#            w = np.sqrt((w_q[inxc]-w_c)**2+4*g[inxc]**2*(n+1))
+#            t = np.floor(100*2*np.pi/w)
+##            t = 2*np.pi/w 
+#            print (t)
             time = np.max([time , 40])
         elif Operator[inxc][0]=='Y':
             time = np.max([time , 40])
@@ -43,9 +47,9 @@ def SingleOpTime(Operator,setting = qusetting()):#确定每一步的演化时间
                 
                 
                 
-def GenerateH(Operator , setting = qusetting()):#生成Hamilton量
+def GenerateH(Operator , setting = qusetting()):
     t0 = 0 ;  t1 = SingleOpTime(Operator,setting)
-    if setting.qtype == 1:#三能级，有腔
+    if setting.qtype == 1:
         
         a,sm,E_uc,E_e,E_g,sn,sx,sxm,sy,sym,sz,En = initial(setting)
         setting.En = En
@@ -56,7 +60,7 @@ def GenerateH(Operator , setting = qusetting()):#生成Hamilton量
         Hc = setting.w_c * a.dag() * a 
         H_eta = setting.eta_q[0] * E_uc[0] + setting.eta_q[1] * E_uc[1]
         Hq = setting.w_q[0]*sn[0] + setting.w_q[1]*sn[1]
-        H = Hq + H_eta + Hc + HCoupling         #未加驱动的Hamilton量
+        H = Hq + H_eta + Hc + HCoupling
 
         
         lenc = len(Operator)
@@ -98,7 +102,7 @@ def GenerateH(Operator , setting = qusetting()):#生成Hamilton量
         
         
         
-    elif setting.qtype == 2:#三能级，无腔
+    elif setting.qtype == 2:
         
         sm,E_uc,E_e,E_g,sn,sx,sxm,sy,sym,sz,En = initial(setting)
         setting.En = En
@@ -141,10 +145,10 @@ def GenerateH(Operator , setting = qusetting()):#生成Hamilton量
         
     
     
-    H = [H , H_q0 , H_q1 , H_d0 , H_d1]#生成总的H
-    tlist = np.linspace(0,t1,(t1-t0)+1)#时间序列
+    H = [H , H_q0 , H_q1 , H_d0 , H_d1]
+    tlist = np.linspace(0,t1,(t1-t0)+1)
 #    tlist = np.arange(0,t1+1)
 #    print(H)
 #    print(w_t[0])
 #    print(args)
-    return (H , args , tlist) 
+    return H , args , tlist 

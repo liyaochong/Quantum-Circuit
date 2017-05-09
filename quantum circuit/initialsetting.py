@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from pylab import *
 
 #==============================================================================
-class qusetting(object):#通过qusetting类进行参数的传递
+class qusetting(object):
     def __init__(self):
         '''
         gate
@@ -26,7 +26,7 @@ class qusetting(object):#通过qusetting类进行参数的传递
         self.CZtime = 850
 #==============================================================================
         '''
-        type
+        initial
         '''
         self.qtype = 1
 #==============================================================================
@@ -58,7 +58,7 @@ class qusetting(object):#通过qusetting类进行参数的传递
 #==============================================================================
 
 
-def initial(setting = qusetting()):#对体系进行初始化
+def initial(setting = qusetting()):
     if setting.qtype == 1:#two qubits,coupled with a resonator
 
         
@@ -69,7 +69,8 @@ def initial(setting = qusetting()):#对体系进行初始化
         a = tensor(destroy(setting.N),qeye(3),qeye(3))
         sm = np.array([tensor(qeye(setting.N),destroy(3),qeye(3)) , tensor(qeye(setting.N),qeye(3),destroy(3))])
         
-        E_uc = np.array([tensor(qeye(setting.N),basis(3,2)*basis(3,2).dag(),qeye(3)) , tensor(qeye(setting.N),qeye(3), basis(3,2)*basis(3,2).dag())])
+        E_uc = np.array([tensor(qeye(setting.N),basis(3,2)*basis(3,2).dag(),qeye(3)) , 
+                         tensor(qeye(setting.N),qeye(3), basis(3,2)*basis(3,2).dag())])
         #用以表征非简谐性的对角线最后一项(非计算能级)
         #E_uc1 = tensor(qeye(N),qeye(3), Qobj([[0,0],[0,1]]))
         
@@ -80,20 +81,15 @@ def initial(setting = qusetting()):#对体系进行初始化
         #基态
         
         sn = np.array([sm[0].dag()*sm[0] , sm[1].dag()*sm[1]])
-        #n
         
         sx = np.array([sm[0].dag()+sm[0],sm[1].dag()+sm[1]]);
-        #三能级 sigmax
         sxm = np.array([tensor(qeye(setting.N),Qobj([[0,1,0],[1,0,0],[0,0,0]]),qeye(3)) , tensor(qeye(setting.N),qeye(3),Qobj([[0,1,0],[1,0,0],[0,0,0]]))])
-        #二能级sigmax
+        
         
         sy = np.array([1j*(sm[0].dag()-sm[0]) , 1j*(sm[1].dag()-sm[1])]);
-        #三能级 sigmay
         sym = np.array([tensor(qeye(setting.N),Qobj([[0,-1j,0],[1j,0,0],[0,0,0]]),qeye(3)) , tensor(qeye(setting.N),qeye(3),Qobj([[0,-1j,0],[1j,0,0],[0,0,0]]))])
-        #二能级sigmay
-
+        
         sz = np.array([E_g[0] - E_e[0] , E_g[1] - E_e[1]])
-        #二能级sigmaz
         
 #==============================================================================
         HCoupling = setting.g[0]*(a+a.dag())*(sm[0]+sm[0].dag()) + setting.g[1]*(a+a.dag())*(sm[1]+sm[1].dag())
@@ -101,9 +97,8 @@ def initial(setting = qusetting()):#对体系进行初始化
         H_eta = setting.eta_q[0] * E_uc[0] + setting.eta_q[1] * E_uc[1]
         Hq = setting.w_q[0]*sn[0] + setting.w_q[1]*sn[1]
         H = Hq + H_eta + Hc + HCoupling
-        #体系的Hamilton量
         
-        w_f = [setting.w_q[k] for k in range(2)]        
+        w_f = [setting.w_q[k] for k in range(2)]
         w_f.append(setting.w_c)
         Ee = H.eigenenergies()
         E_e = Ee.tolist()
@@ -111,7 +106,7 @@ def initial(setting = qusetting()):#对体系进行初始化
         cloc = np.where(np.array(E_index) == 2)[0][0]
         E_e.pop(cloc+1)
         E_index.pop(cloc)
-        #根据w_q中频率的大小，得到耦合体系下每个qubit能量(去除腔频率的影响)
+        
         En = np.zeros(2)
         for idx,i in enumerate(E_index):
             En[i] = E_e[idx+1]-E_e[0]
@@ -125,7 +120,7 @@ def initial(setting = qusetting()):#对体系进行初始化
 ##        E_q.append(En[JJ+1]-En[0])
 ##        print(E_q[II]/2/np.pi)
 ##        print(En/2/np.pi)
-        # print(En/2/np.pi)
+        print(En/2/np.pi)
         return(a,sm,E_uc,E_e,E_g,sn,sx,sxm,sy,sym,sz,En)
 #==============================================================================        
     elif setting.qtype == 2:#two qubits,coupled directly
