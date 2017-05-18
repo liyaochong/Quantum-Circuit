@@ -69,8 +69,8 @@ def Gate_H(inxc,t0,t1,phi=np.pi,width = 6,setting = qusetting()):
     args_i={}
     w_t_i='(0)*('+str(t0)+'<t<='+str(t1)+')'    
     if setting.DRAG:
-        D_t_i='(-Omega'+str(inxc)+'/2*(np.exp(-(t-20-'+str(t0)+')**2/2.0/width'+str(inxc)+'**2)*np.cos(t*f'+str(inxc)+'+np.pi/2)'
-        D_t_i += '-(t-20-'+str(t0)+')/2.0/width'+str(inxc)+'**2/'+str(setting.eta_q[inxc])+'*np.exp(-(t-20-'+str(t0)+')**2/2.0/width'+str(inxc)+'**2)*np.cos(t*f'+str(inxc)+'+np.pi)))'
+        D_t_i='(Omega'+str(inxc)+'/2*(np.exp(-(t-20-'+str(t0)+')**2/2.0/width'+str(inxc)+'**2)*np.cos(t*f'+str(inxc)+'-np.pi/2)'
+        D_t_i += '-(t-20-'+str(t0)+')/2.0/width'+str(inxc)+'**2/'+str(setting.eta_q[inxc])+'*np.exp(-(t-20-'+str(t0)+')**2/2.0/width'+str(inxc)+'**2)*np.cos(t*f'+str(inxc)+')))'
         D_t_i+='*('+str(t0)+'<t<='+str(min(t1,t0+40))+')'
         D_t_i+='+(Omega'+str(inxc)+'*(np.exp(-(t-20-'+str(t0)+'-40)**2/2.0/width'+str(inxc)+'**2)*np.cos(t*f'+str(inxc)+')'
         D_t_i += '-(t-20-'+str(t0)+'-40)/2.0/width'+str(inxc)+'**2/'+str(setting.eta_q[inxc])+'*np.exp(-(t-20-'+str(t0)+'-40)**2/2.0/width'+str(inxc)+'**2)*np.cos(t*f'+str(inxc)+'+np.pi/2.0)))'
@@ -110,9 +110,9 @@ def Gate_CZ(inxc,inxt,t0,t1,phi=np.pi,width = 10,setting = qusetting()):
     D_t_i='0*('+str(t0)+'<t<='+str(t1)+')'
 #    args_i['w_t'+str(inxc)]=setting.w_q[inxc]
     args_i['width'+str(inxc)]=width
-    args_i['t'+str(inxc)+'0']=50
-    args_i['t'+str(inxc)+'1']=setting.CZ_deltat
-    args_i['delta'+str(inxc)]=(setting.En[inxt]-setting.En[inxc]+setting.eta_q[inxt])
+    args_i['t'+str(inxc)+'0']=setting.CZ_deltat
+    args_i['t'+str(inxc)+'1']=setting.CZtime-setting.CZ_deltat
+    args_i['delta'+str(inxc)]=(setting.w_q[inxt]-setting.w_q[inxc]+setting.eta_q[inxt])
 #    print(setting.En[inxt]-setting.En[inxc]+setting.eta_q[inxt])
 #    print(w_t_i)
 #    print(args_i)

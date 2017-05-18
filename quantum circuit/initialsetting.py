@@ -21,7 +21,7 @@ class qusetting(object):
         self.omega = 0.033348628532133037
         self.delta = 0.0684001
         self.iswap_deltat = 361
-        self.CZ_deltat = 751
+        self.CZ_deltat = 86.0
         self.ramp = 129
         self.CZtime = 850
 #==============================================================================
@@ -92,11 +92,20 @@ def initial(setting = qusetting()):
         sz = np.array([E_g[0] - E_e[0] , E_g[1] - E_e[1]])
         
 #==============================================================================
+#        Delta1 = abs(setting.w_q[0]-setting.w_c)
+#        Delta2 = abs(setting.w_q[1]-setting.w_c)
+#        g_effect = 0.5*setting.g[0]*setting.g[1]*(Delta1+Delta2)/(Delta1*Delta2)
+#        print(g_effect)
         HCoupling = setting.g[0]*(a+a.dag())*(sm[0]+sm[0].dag()) + setting.g[1]*(a+a.dag())*(sm[1]+sm[1].dag())
         Hc = setting.w_c * a.dag() * a 
         H_eta = setting.eta_q[0] * E_uc[0] + setting.eta_q[1] * E_uc[1]
         Hq = setting.w_q[0]*sn[0] + setting.w_q[1]*sn[1]
         H = Hq + H_eta + Hc + HCoupling
+        
+        # k = H.eigenstates()
+#        print(k[0][5]/2/np.pi,k[0][6]/2/np.pi)
+#        print(k[1][6].dag()*H*k[1][5])
+        # print(ptrace(H,[1,2]))
         
         w_f = [setting.w_q[k] for k in range(2)]
         w_f.append(setting.w_c)
@@ -120,7 +129,7 @@ def initial(setting = qusetting()):
 ##        E_q.append(En[JJ+1]-En[0])
 ##        print(E_q[II]/2/np.pi)
 ##        print(En/2/np.pi)
-        print(En/2/np.pi)
+#        print(En/2/np.pi)
         return(a,sm,E_uc,E_e,E_g,sn,sx,sxm,sy,sym,sz,En)
 #==============================================================================        
     elif setting.qtype == 2:#two qubits,coupled directly
@@ -161,6 +170,7 @@ def initial(setting = qusetting()):
         H_eta = setting.eta_q[0] * E_uc[0] + setting.eta_q[1] * E_uc[1]
         Hq = setting.w_q[0]*sn[0] + setting.w_q[1]*sn[1]
         H=  Hq + H_eta + HCoupling
+        
         
 
         w_f = [setting.w_q[k] for k in range(2)]

@@ -17,13 +17,13 @@ starttime=clock()
 
 
 quset = qusetting()
-Operator = ['Y','I']
+Operator = ['I2','I']
 #Operator = ['Y'  ,  'X' ]
 #Operator = ['iswap1'  ,  'I' ]
 #psi0 = tensor(basis(quset.N,quset.n) , (basis(3,0)+basis(3,1)).unit() ,  (basis(3,0)-basis(3,1)).unit())
 #psi0 = tensor(basis(quset.N,quset.n)  ,  basis(3,1), (basis(3,0)+basis(3,1)).unit())
 #psi0 = tensor(basis(quset.N,quset.n) , (basis(3,0)+basis(3,1)).unit() ,  (basis(3,1)).unit())
-psi0 = tensor(basis(quset.N,quset.n) , basis(3,1) ,  basis(3,0))
+psi0 = tensor(basis(quset.N,quset.n) , basis(3,0) ,  basis(3,0))
 #psi0 = tensor(basis(3,1) ,  (basis(3,0)+basis(3,1)).unit())
 quset.DRAG = True
 #quset.omega = 0.033243043043
@@ -48,16 +48,16 @@ rf1 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(En[1])*tlist[-1])*basis(3,1)*basis(
 #U = tensor(qeye(quset.N),rf0,rf1)
 U = tensor(qeye(3),rf0,rf1)
 
-target = sxm[0]*psi0
+#target = sxm[0]*psi0
 #target = tensor(basis(quset.N,quset.n) , (basis(3,0)-basis(3,1)).unit() ,  basis(3,1))
-target = tensor(basis(quset.N,quset.n)  ,  basis(3,1), (basis(3,0)+basis(3,1)).unit())
+target = tensor(basis(quset.N,quset.n)  ,  basis(3,1), (basis(3,0)-basis(3,1)).unit())
 #target = tensor(basis(quset.N,quset.n) , (basis(3,0)-basis(3,1)).unit() ,  (basis(3,0)+basis(3,1)).unit())
 #target = tensor(basis(3,1), (basis(3,0)-basis(3,1)).unit())
 #tar = (tensor(basis(3,0) , basis(3,0))+tensor(basis(3,1) , basis(3,0))+tensor(basis(3,0) , basis(3,1))-tensor(basis(3,1) , basis(3,1))).unit()
 #target = tensor(basis(quset.N,quset.n),tar)
 fid=fidelity(U*result.states[-1]*result.states[-1].dag()*U.dag(), target)
 #fid1=fidelity(ptrace(U*result.states[-1],2), ptrace(target,2))
-print(fid)
+#print(fid)
 
 ##rf01 =np.exp(1j*(w02[0])*tlist[-1])*basis(3,2)*basis(3,2).dag()
 #rf02 = np.exp(1j*(En[0])*tlist[-1])*basis(3,1)*basis(3,1).dag()

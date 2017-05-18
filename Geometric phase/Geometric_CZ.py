@@ -14,7 +14,7 @@ def Geometric_CZ(ome = 8.63552):
     w_q = 5.849 * 2 * np.pi
     g = 0.0198 * 2 * np.pi
     eta_q = -0.244 * 2 * np.pi
-    N = 10              # number of cavity fock states
+    N = 20              # number of cavity fock states
     n= 0
     
     delta = 0.004 * 2 * np.pi
@@ -70,6 +70,7 @@ def Geometric_CZ(ome = 8.63552):
     Hq = w_q*sn
     H = Hq + H_eta + Hc + HCoupling
     Ee = H.eigenenergies()
+    print(Ee/2/np.pi)
     wd = Ee[1]+delta
     #print(Ee/2/np.pi)
     Hd = [2*omega*(a+a.dag()),'np.cos(wd*t)']
@@ -89,8 +90,8 @@ def Geometric_CZ(ome = 8.63552):
     options.ntraj=1000
     options.rhs_reuse=False
     
-    psi0 = tensor(basis(N,n) , (basis(3,0)+basis(3,1)).unit())
-    #psi0 = tensor(basis(N,n) , basis(3,0))
+#    psi0 = tensor(basis(N,n) , (basis(3,0)+basis(3,1)).unit())
+    psi0 = tensor(basis(N,n) , basis(3,0))
     
     tlist = np.linspace(0,250,251)
     
@@ -161,7 +162,7 @@ if __name__ == '__main__':
     
 
     starttime = clock()
-    Geometric_CZ(ome = 8)
+    Geometric_CZ(ome = 4)
 #    fid=fminbound(Geometric_CZ,6.0,10.0, xtol=1e-07,disp=3)
     
     endtime = clock()

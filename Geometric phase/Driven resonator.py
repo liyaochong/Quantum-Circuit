@@ -18,12 +18,16 @@ kappa = wc/Q
 print(kappa)
 
 H = wc*a.dag()*a
-H1 = [2*omega*(a+a.dag()),'np.cos(wd*t)']
+w = '1-np.cos(wd*t)'   
+#w = 'np.sin(wd*t)'  
+#w = '(10*np.exp(-(t-175)**2/2.0/5**2)*np.cos(wd*t))*(0<t<=350)'
+            
+H1 = [2*omega*(a+a.dag()),w]
 H = [H,H1]
 #print(H)
 args = {'wd':wd}
 
-psi0 = fock(n,0)
+psi0 = basis(n,0)
 tlist = np.linspace(0,250,501) 
 result = mesolve(H,psi0,tlist,[],[],args = args)
 
@@ -51,7 +55,9 @@ fig, axes = plt.subplots(1, 1, figsize=(10,6))
 axes.plot(n_x,n_p)
 fig, axes = plt.subplots(1, 1, figsize=(10,6))
 axes.plot(tlist,n_a)
-
+plt.show()
+print(n_x[250],n_p[250])
+print('end')
 cops = []
 cops.append(np.sqrt(kappa)*a)
 
