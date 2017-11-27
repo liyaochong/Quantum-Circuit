@@ -39,10 +39,10 @@ def getfid(T):
 #==============================================================================
     n_x0 = [] ; n_y0 = [] ; n_z0 = [];
     n_x1 = [] ; n_y1 = [] ; n_z1 = [];
-    l0 = [];l1 = []
+    l0 = [];l1 = [];R = []
     for t in range(0,len(tlist)):
-        U0 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(E[1])*tlist[t])*basis(3,1)*basis(3,1).dag()
-        U1 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(E[2])*tlist[t])*basis(3,1)*basis(3,1).dag()
+        U0 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(E[1]-E[0])*tlist[t])*basis(3,1)*basis(3,1).dag()
+        U1 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(E[2]-E[0])*tlist[t])*basis(3,1)*basis(3,1).dag()
         U = tensor(U0,U1)
     #        U = (1j*H0*tlist[t]).expm()
         
@@ -61,11 +61,18 @@ def getfid(T):
         l0.append(expect(E_uc0,output.states[t]))
         l1.append(expect(E_uc1,output.states[t]))
 
-   
+    n_x0 = np.array(n_x0);n_y0 = np.array(n_y0);n_z0 = np.array(n_z0);
+    n_x1 = np.array(n_x1);n_y1 = np.array(n_y1);n_z1 = np.array(n_z1);
+#    R = np.sqrt(np.square(n_x0-n_x1)+np.square(n_y0-n_y1)+np.square(n_z0-n_z1))
     fig ,axes = plt.subplots(3,1)
     axes[0].plot(tlist,n_x0);axes[0].set_xlabel('t');axes[0].set_ylabel('X0')
     axes[1].plot(tlist,n_y0);axes[1].set_xlabel('t');axes[1].set_ylabel('Y0')
     axes[2].plot(tlist,n_z0);axes[2].set_xlabel('t');axes[2].set_ylabel('Z0')
+    fig ,axes = plt.subplots(3,1)
+    axes[0].plot(tlist,n_x1);axes[0].set_xlabel('t');axes[0].set_ylabel('X1')
+    axes[1].plot(tlist,n_y1);axes[1].set_xlabel('t');axes[1].set_ylabel('Y1')
+    axes[2].plot(tlist,n_z1);axes[2].set_xlabel('t');axes[2].set_ylabel('Z1')
+#    axes[3].plot(tlist,R);axes[3].set_xlabel('t');axes[3].set_ylabel('R')
     sphere = Bloch()
     sphere.add_points([n_x0 , n_y0 , n_z0])
     sphere.add_vectors([n_x0[-1],n_y0[-1],n_z0[-1]])
@@ -80,6 +87,7 @@ def getfid(T):
     axes[1].plot(tlist,l1);axes[1].set_xlabel('t');axes[1].set_ylabel('L1')
 ##==============================================================================
     return([fid,leakage[0]])
+#    return(abs(np.max(n_x1)-np.min(n_x1)))
     
 def findstate(S,state):
     l = None
@@ -98,36 +106,44 @@ def findstate(S,state):
 def CNOT(P):
     tp = P[0]
     omega = P[1]
+#    D = P
+#    tp = 400
+#    omega = 0.060*22*np.pi
     
 
     global H,tlist,args,options
     
-    f1 = wq[1]
-#    f1 = E[2]-E[0]#CR驱动频率
+#    f1 = wq[1]
+    f1 = E[2]-E[0]#CR驱动频率
     f2 = E[1]-E[0]#X波频率
     alpha = 0.05
     # w1 = '(-0.069066*np.pi/2*np.exp(-(t-20)**2/2.0/6**2))*(0<t<=40)'
 
     # w3 = '(0.03332*np.pi*(np.exp(-(t-60-tp)**2/2.0/6**2)*np.cos(t*omega3)+(t-60-tp)/2/6**2/'+str(eta_q[0])+'*np.exp(-(t-tp-60)**2/2.0/6**2)*np.cos(t*omega3-np.pi/2)))*((40+tp)<t<=80+tp)'
     
-    w1 = 'omega/2*((erf((t-8)/ramp)-erf((t-tp+8)/ramp))*(np.cos(f1*t)))*(0<t<=tp)'
-#    w1 = 'omega/2*((erf((t-8)/ramp)-erf((t-tp+8)/ramp))*(np.cos(f1*t))+D*(2*np.exp(-(t-8)**2/ramp**2)/np.sqrt(np.pi)/ramp-2*np.exp(-(t-tp+8)**2/ramp**2)/np.sqrt(np.pi)/ramp)/'+str(eta_q[0])+'*(np.cos(f1*t-np.pi/2)))*(0<t<=tp)'
+#    w1 = 'omega/2*((erf((t-8)/ramp)-erf((t-tp+8)/ramp))*(np.cos(f1*t)))*(0<t<=tp)'
+    w1 = 'omega/2*((erf((t-8)/ramp)-erf((t-tp+8)/ramp))*(np.cos(f1*t))+D*(2*np.exp(-(t-8)**2/ramp**2)/np.sqrt(np.pi)/ramp-2*np.exp(-(t-tp+8)**2/ramp**2)/np.sqrt(np.pi)/ramp)/'+str(eta_q[0])+'*(np.cos(f1*t-np.pi/2)))*(0<t<=tp)'
 #    w1 = 'omega*(np.exp(-(t-15)**2/2/5**2)*((0)<t<=15)+1*(15<t<=tp-15)+np.exp(-(t-tp+15)**2/2/5**2)*((tp-15)<t<=tp))*(np.cos(f1*t))'
+    
     w2 = '(0.03332*2*np.pi*(np.exp(-(t-30-tp)**2/2.0/6**2)*np.cos(t*f2)+(t-30-tp)/2/6**2/'+str(eta_q[0])+'*np.exp(-(t-30-tp)**2/2.0/6**2)*np.cos(t*f2-np.pi/2)))*((10+tp)<t<=50+tp)'
 
-#    w3 = 'omega/2*((erf((t-tp-60-8)/ramp)-erf((t-tp-60-tp+8)/ramp))*(np.cos(f1*t+np.pi))+D*(2*np.exp(-(t-tp-60-8)**2/ramp**2)/np.sqrt(np.pi)/ramp-2*np.exp(-(t-tp-60-tp+8)**2/ramp**2)/np.sqrt(np.pi)/ramp)/'+str(eta_q[0])+'*(np.cos(f1*t+np.pi-np.pi/2)))*(tp+60<t<=2*tp+60)'
-    w3 = 'omega/2*(erf((t-tp-60-8)/ramp)-erf((t-tp-60-tp+8)/ramp))*(np.cos(f1*t+np.pi))*(tp+60<t<=2*tp+60)'
+    w3 = 'omega/2*((erf((t-tp-60-8)/ramp)-erf((t-tp-60-tp+8)/ramp))*(np.cos(f1*t+np.pi))+D*(2*np.exp(-(t-tp-60-8)**2/ramp**2)/np.sqrt(np.pi)/ramp-2*np.exp(-(t-tp-60-tp+8)**2/ramp**2)/np.sqrt(np.pi)/ramp)/'+str(eta_q[0])+'*(np.cos(f1*t+np.pi-np.pi/2)))*(tp+60<t<=2*tp+60)'
+#    w3 = 'omega/2*(erf((t-tp-60-8)/ramp)-erf((t-tp-60-tp+8)/ramp))*(np.cos(f1*t+np.pi))*(tp+60<t<=2*tp+60)'
 #    w3 = 'omega*(np.exp(-(t-tp-75)**2/2/5**2)*(tp+60<t<=tp+75)+1*(tp+75<t<=2*tp+45)+np.exp(-(t-2*tp-45)**2/2/5**2)*((2*tp+45)<t<=2*tp+60))*(np.cos(f1*t+np.pi))'
 
     w4 = '(0.03332*2*np.pi*(np.exp(-(t-90-2*tp)**2/2.0/6**2)*np.cos(t*f2)+(t-90-2*tp)/2/6**2/'+str(eta_q[0])+'*np.exp(-(t-90-2*tp)**2/2.0/6**2)*np.cos(t*f2-np.pi/2)))*((2*tp+70)<t<=2*tp+110)'
     
           
     w5 = 'alpha*omega/2*(erf((t-8)/ramp)-erf((t-tp+8)/ramp))*(np.cos(f1*t)+np.cos(f1*t-np.pi/2))*((0)<t<=tp)'
+
 #    w6 = 'alpha*omega/2*(erf((t-8)/5)-erf((t-tp+8)/5))*(np.cos(f1*t+0.5*np.pi))*((0)<t<=tp)'
     w6 = 'alpha*(0.03332*2*np.pi*(np.exp(-(t-30-tp)**2/2.0/6**2)*np.cos(t*f2)+(t-30-tp)/2/6**2/'+str(eta_q[0])+'*np.exp(-(t-30-tp)**2/2.0/6**2)*np.cos(t*f2-np.pi/2)))*((10+tp)<t<=50+tp)'
+
     w7 = 'alpha*omega/2*(erf((t-tp-60-8)/ramp)-erf((t-tp-60-tp+8)/ramp))*(np.cos(f1*t+np.pi)+np.cos(f1*t+np.pi/2))*(tp+60<t<=2*tp+60)'
+
 #    w8 = 'alpha*omega/2*(erf((t-tp-60-8)/5)-erf((t-tp-60-tp+8)/5))*(np.cos(f1*t+np.pi+0.5*np.pi))*(tp+60<t<=2*tp+60)'
     w8 = 'alpha*(0.03332*2*np.pi*(np.exp(-(t-90-2*tp)**2/2.0/6**2)*np.cos(t*f2)+(t-90-2*tp)/2/6**2/'+str(eta_q[0])+'*np.exp(-(t-90-2*tp)**2/2.0/6**2)*np.cos(t*f2-np.pi/2)))*((2*tp+70)<t<=2*tp+110)'
+
     args = {'omega':omega,'tp':tp , 'ramp': 5 , 'f1':f1 , 'f2':f2, 'alpha':alpha , 'D':-0.5}
 
     
@@ -143,6 +159,7 @@ def CNOT(P):
     H =  [H0,H1,H2,H3,H4]
 
     tlist = np.arange(0,2*tp+110,0.1)
+#    tlist = np.arange(0,tp,0.1)
     options=Options()
     options.atol=1e-8
     options.rtol=1e-6
@@ -197,15 +214,19 @@ def CNOT(P):
 
     
 #    psi = [tensor(basis(3,1),basis(3,1)),(tensor(basis(3,0),basis(3,1))-1j*tensor(basis(3,0),basis(3,0))).unit()]
-    psi = [s11,(s01-1j*s00).unit()]
+    psi = [s11,(s00-1j*s01).unit()]
     fid,leakage = getfid(psi)
     print(P,np.mean(leakage),fid,np.min(fid))
-    gc.collect()
+
+
+#    x = getfid(psi)
+#    print(x)
+#    gc.collect()
 
 
     
 
-    
+#    return(x)
     return(1-np.mean(fid))
 
 def opt(radio):
@@ -226,7 +247,7 @@ if __name__=='__main__':
     
     N = 3
     
-    g = 0.0038 * 2 * np.pi* 2 * np.pi
+    g = 0.0038 * 2 * np.pi
     wq= np.array([4.914 , 5.114 ]) * 2 * np.pi
     eta_q=  np.array([-0.330 , -0.330]) * 2 * np.pi
     
@@ -243,9 +264,21 @@ if __name__=='__main__':
 
 
 #    fid = CNOT([70.1805137306,1.10522763])
-    fid = CNOT([0,0.060*2*np.pi])
+    fid = CNOT([104.7520927  ,   0.83144823])
+#    fid = CNOT([1000,0.060*2*np.pi])
 #    print(fid)
-#    x0 = [50,0.06*2*np.pi]
+
+#    D = np.linspace(-10,10,1000)
+#    p = Pool(14)
+#
+#    A = p.map(CNOT,D)
+#
+#        
+#    p.close()
+#    p.join()
+#    figure();plot(D,A);xlabel('D');ylabel('delta_x')
+    
+#    x0 = [400,0.06*2*np.pi]
 #    result = minimize(CNOT, x0, method="Nelder-Mead",options={'disp': True})
 #    print(result.x[0],result.x[1])
 
