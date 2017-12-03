@@ -27,8 +27,10 @@ def getfid(T):
     target = T[1]
     output = mesolve(H,psi,tlist,[],[],args = args,options = options)
     
-    U1 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[1]-E[0])*tlist[-1])*basis(N,1)*basis(N,1).dag()
-    U2 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[2]-E[0])*tlist[-1])*basis(N,1)*basis(N,1).dag()
+    U1 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[2]-E[0]+E[5]-E[1])/2*tlist[-1])*basis(N,1)*basis(N,1).dag()
+    U2 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[1]-E[0]+E[5]-E[2])/2*tlist[-1])*basis(N,1)*basis(N,1).dag()
+#    U1 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[2]-E[0])*tlist[-1])*basis(N,1)*basis(N,1).dag()
+#    U2 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[1]-E[0])*tlist[-1])*basis(N,1)*basis(N,1).dag()
     UT = tensor(U1,U2)
     
     fid = fidelity(UT*output.states[-1]*output.states[-1].dag()*UT.dag(),target)
@@ -37,49 +39,60 @@ def getfid(T):
     
     
 #==============================================================================
-    n_x0 = [] ; n_y0 = [] ; n_z0 = [];
-    n_x1 = [] ; n_y1 = [] ; n_z1 = [];
-    l0 = [];l1 = []
-    for t in range(0,len(tlist)):
-        U0 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(E[1])*tlist[t])*basis(3,1)*basis(3,1).dag()
-        U1 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(E[2])*tlist[t])*basis(3,1)*basis(3,1).dag()
-        U = tensor(U0,U1)
-    #        U = (1j*H0*tlist[t]).expm()
-        
-        opx0 = U.dag()*(sm0.dag()+sm0)*U
-        opy0 = U.dag()*(1j*sm0.dag()-1j*sm0)*U
-        opz0 = tensor(qeye(3),qeye(3))-2*sm0.dag()*sm0
-        opx1 = U.dag()*(sm1.dag()+sm1)*U
-        opy1 = U.dag()*(1j*sm1.dag()-1j*sm1)*U
-        opz1 = tensor(qeye(3),qeye(3))-2*sm1.dag()*sm1
-        n_x0.append(expect(opx0,output.states[t]))
-        n_y0.append(expect(opy0,output.states[t]))
-        n_z0.append(expect(opz0,output.states[t]))
-        n_x1.append(expect(opx1,output.states[t]))
-        n_y1.append(expect(opy1,output.states[t]))
-        n_z1.append(expect(opz1,output.states[t]))
-        l0.append(expect(E_uc0,output.states[t]))
-        l1.append(expect(E_uc1,output.states[t]))
+#    n_x0 = [] ; n_y0 = [] ; n_z0 = [];
+#    n_x1 = [] ; n_y1 = [] ; n_z1 = [];
+#    l0 = [];l1 = [];R = []
+#    for t in range(0,len(tlist)):
+##        U0 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(E[2]-E[0]+E[5]-E[1])/2*tlist[t])*basis(3,1)*basis(3,1).dag()
+##        U1 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(E[1]-E[0]+E[5]-E[2])/2*tlist[t])*basis(3,1)*basis(3,1).dag()
+#        U0 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(E[2]-E[0])*tlist[t])*basis(3,1)*basis(3,1).dag()
+#        U1 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(E[1]-E[0])*tlist[t])*basis(3,1)*basis(3,1).dag()
+#        U = tensor(U0,U1)
+#    #        U = (1j*H0*tlist[t]).expm()
+#        
+#        opx0 = U.dag()*(sm0.dag()+sm0)*U
+#        opy0 = U.dag()*(1j*sm0.dag()-1j*sm0)*U
+#        opz0 = tensor(qeye(3),qeye(3))-2*sm0.dag()*sm0
+#        opx1 = U.dag()*(sm1.dag()+sm1)*U
+#        opy1 = U.dag()*(1j*sm1.dag()-1j*sm1)*U
+#        opz1 = tensor(qeye(3),qeye(3))-2*sm1.dag()*sm1
+#        n_x0.append(expect(opx0,output.states[t]))
+#        n_y0.append(expect(opy0,output.states[t]))
+#        n_z0.append(expect(opz0,output.states[t]))
+#        n_x1.append(expect(opx1,output.states[t]))
+#        n_y1.append(expect(opy1,output.states[t]))
+#        n_z1.append(expect(opz1,output.states[t]))
+#        l0.append(expect(E_uc0,output.states[t]))
+#        l1.append(expect(E_uc1,output.states[t]))
+#
+#    n_x0 = np.array(n_x0);n_y0 = np.array(n_y0);n_z0 = np.array(n_z0);
+#    n_x1 = np.array(n_x1);n_y1 = np.array(n_y1);n_z1 = np.array(n_z1);
+##    R = np.sqrt(np.square(n_x0-n_x1)+np.square(n_y0-n_y1)+np.square(n_z0-n_z1))
+#    fig ,axes = plt.subplots(2,2)
+#    axes[0][0].plot(tlist,n_x0,label = 'X0');
+#    axes[0][0].plot(tlist,n_y0,label = 'Y0');
+#    axes[0][0].plot(tlist,n_z0,label = 'Z0');axes[0][0].set_xlabel('t');axes[0][0].set_ylabel('Population')
+#    axes[0][0].legend(loc = 'upper left');plt.show()
+#    axes[0][1].plot(tlist,n_x1,label = 'X1');
+#    axes[0][1].plot(tlist,n_y1,label = 'Y1');
+#    axes[0][1].plot(tlist,n_z1,label = 'Z1');axes[0][1].set_xlabel('t');axes[0][1].set_ylabel('Population')
+#    axes[0][1].legend(loc = 'upper left');plt.show();plt.tight_layout()
+#    axes[1][0].plot(tlist,l0);axes[1][0].set_xlabel('t');axes[1][0].set_ylabel('L0')
+#    axes[1][1].plot(tlist,l1);axes[1][1].set_xlabel('t');axes[1][1].set_ylabel('L1')
+#    sphere = Bloch()
+#    sphere.add_points([n_x0 , n_y0 , n_z0])
+#    sphere.add_vectors([n_x0[-1],n_y0[-1],n_z0[-1]])
+#    sphere.make_sphere() 
+#    sphere = Bloch()
+#    sphere.add_points([n_x1 , n_y1 , n_z1])
+#    sphere.add_vectors([n_x1[-1],n_y1[-1],n_z1[-1]])
+#    sphere.make_sphere() 
+#    plt.show() 
 
-   
-    fig ,axes = plt.subplots(3,1)
-    axes[0].plot(tlist,n_x0);axes[0].set_xlabel('t');axes[0].set_ylabel('X0')
-    axes[1].plot(tlist,n_y0);axes[1].set_xlabel('t');axes[1].set_ylabel('Y0')
-    axes[2].plot(tlist,n_z0);axes[2].set_xlabel('t');axes[2].set_ylabel('Z0')
-    sphere = Bloch()
-    sphere.add_points([n_x0 , n_y0 , n_z0])
-    sphere.add_vectors([n_x0[-1],n_y0[-1],n_z0[-1]])
-    sphere.make_sphere() 
-    sphere = Bloch()
-    sphere.add_points([n_x1 , n_y1 , n_z1])
-    sphere.add_vectors([n_x1[-1],n_y1[-1],n_z1[-1]])
-    sphere.make_sphere() 
-    plt.show() 
-    fig ,axes = plt.subplots(2,1)
-    axes[0].plot(tlist,l0);axes[0].set_xlabel('t');axes[0].set_ylabel('L0')
-    axes[1].plot(tlist,l1);axes[1].set_xlabel('t');axes[1].set_ylabel('L1')
+    
 ##==============================================================================
-    return([fid,leakage[0]])
+    return([fid,leakage[0],UT*output.states[-1]])
+#    return(abs(np.max(n_x1)-np.min(n_x1)))
     
 def findstate(S,state):
     l = None
@@ -94,17 +107,67 @@ def findstate(S,state):
         print('No state')
     else:
         return(l)
+    
+def Operator_View(M,lab):
+    if isinstance(M, Qobj):
+        # extract matrix data from Qobj
+        M = M.full()
+
+    n = np.size(M)
+    xpos, ypos = np.meshgrid(range(M.shape[0]), range(M.shape[1]))
+    xpos = xpos.T.flatten() - 0.5
+    ypos = ypos.T.flatten() - 0.5
+    zpos = np.zeros(n)
+    dx = dy = 0.8 * np.ones(n)
+    
+    dz = np.real(M.flatten())
+    z_min = min(dz)
+    z_max = max(dz)
+    if z_min == z_max:
+        z_min -= 0.1
+        z_max += 0.1
+    norm = mpl.colors.Normalize(z_min, z_max)
+    cmap = cm.get_cmap('jet')  # Spectral
+    colors = cmap(norm(dz))
+    fig = plt.figure()
+    ax = Axes3D(fig, azim=-35, elev=35)
+    ax.bar3d(xpos, ypos, zpos, dx, dy, dz, color=colors)
+    ax.set_title(lab+'_Real')
+    cax, kw = mpl.colorbar.make_axes(ax, shrink=.75, pad=.0)
+    mpl.colorbar.ColorbarBase(cax, cmap=cmap, norm=norm)
+    
+    dz = np.imag(M.flatten())
+    z_min = min(dz)
+    z_max = max(dz)
+    if z_min == z_max:
+        z_min -= 0.1
+        z_max += 0.1
+    norm = mpl.colors.Normalize(z_min, z_max)
+    cmap = cm.get_cmap('jet')  # Spectral
+    colors = cmap(norm(dz))
+    fig = plt.figure()
+    ax = Axes3D(fig, azim=-35, elev=35)
+    ax.bar3d(xpos, ypos, zpos, dx, dy, dz, color=colors)
+    ax.set_title(lab+'_Imag')
+    cax, kw = mpl.colorbar.make_axes(ax, shrink=.75, pad=.0)
+    mpl.colorbar.ColorbarBase(cax, cmap=cmap, norm=norm)
 
 def CNOT(P):
     tp = P[0]
     omega = P[1]
+    xita1 = P[2]
+    xita2 = P[3]
+#    D = P
+#    tp = 400
+#    omega = 0.060*2*np.pi
     
 
     global H,tlist,args,options
     
-    f1 = wq[1]
-#    f1 = E[2]-E[0]#CR驱动频率
-    f2 = E[1]-E[0]#X波频率
+    f1 = (E[1]-E[0]+E[5]-E[2])/2
+    f2 = (E[2]-E[0]+E[5]-E[1])/2
+#    f1 = E[1]-E[0]#CR驱动频率
+#    f2 = E[2]-E[0]#X波频率
     alpha = 0.05
     # w1 = '(-0.069066*np.pi/2*np.exp(-(t-20)**2/2.0/6**2))*(0<t<=40)'
 
@@ -113,6 +176,7 @@ def CNOT(P):
     w1 = 'omega/2*((erf((t-8)/ramp)-erf((t-tp+8)/ramp))*(np.cos(f1*t)))*(0<t<=tp)'
 #    w1 = 'omega/2*((erf((t-8)/ramp)-erf((t-tp+8)/ramp))*(np.cos(f1*t))+D*(2*np.exp(-(t-8)**2/ramp**2)/np.sqrt(np.pi)/ramp-2*np.exp(-(t-tp+8)**2/ramp**2)/np.sqrt(np.pi)/ramp)/'+str(eta_q[0])+'*(np.cos(f1*t-np.pi/2)))*(0<t<=tp)'
 #    w1 = 'omega*(np.exp(-(t-15)**2/2/5**2)*((0)<t<=15)+1*(15<t<=tp-15)+np.exp(-(t-tp+15)**2/2/5**2)*((tp-15)<t<=tp))*(np.cos(f1*t))'
+    
     w2 = '(0.03332*2*np.pi*(np.exp(-(t-30-tp)**2/2.0/6**2)*np.cos(t*f2)+(t-30-tp)/2/6**2/'+str(eta_q[0])+'*np.exp(-(t-30-tp)**2/2.0/6**2)*np.cos(t*f2-np.pi/2)))*((10+tp)<t<=50+tp)'
 
 #    w3 = 'omega/2*((erf((t-tp-60-8)/ramp)-erf((t-tp-60-tp+8)/ramp))*(np.cos(f1*t+np.pi))+D*(2*np.exp(-(t-tp-60-8)**2/ramp**2)/np.sqrt(np.pi)/ramp-2*np.exp(-(t-tp-60-tp+8)**2/ramp**2)/np.sqrt(np.pi)/ramp)/'+str(eta_q[0])+'*(np.cos(f1*t+np.pi-np.pi/2)))*(tp+60<t<=2*tp+60)'
@@ -123,11 +187,15 @@ def CNOT(P):
     
           
     w5 = 'alpha*omega/2*(erf((t-8)/ramp)-erf((t-tp+8)/ramp))*(np.cos(f1*t)+np.cos(f1*t-np.pi/2))*((0)<t<=tp)'
+
 #    w6 = 'alpha*omega/2*(erf((t-8)/5)-erf((t-tp+8)/5))*(np.cos(f1*t+0.5*np.pi))*((0)<t<=tp)'
     w6 = 'alpha*(0.03332*2*np.pi*(np.exp(-(t-30-tp)**2/2.0/6**2)*np.cos(t*f2)+(t-30-tp)/2/6**2/'+str(eta_q[0])+'*np.exp(-(t-30-tp)**2/2.0/6**2)*np.cos(t*f2-np.pi/2)))*((10+tp)<t<=50+tp)'
+
     w7 = 'alpha*omega/2*(erf((t-tp-60-8)/ramp)-erf((t-tp-60-tp+8)/ramp))*(np.cos(f1*t+np.pi)+np.cos(f1*t+np.pi/2))*(tp+60<t<=2*tp+60)'
+
 #    w8 = 'alpha*omega/2*(erf((t-tp-60-8)/5)-erf((t-tp-60-tp+8)/5))*(np.cos(f1*t+np.pi+0.5*np.pi))*(tp+60<t<=2*tp+60)'
     w8 = 'alpha*(0.03332*2*np.pi*(np.exp(-(t-90-2*tp)**2/2.0/6**2)*np.cos(t*f2)+(t-90-2*tp)/2/6**2/'+str(eta_q[0])+'*np.exp(-(t-90-2*tp)**2/2.0/6**2)*np.cos(t*f2-np.pi/2)))*((2*tp+70)<t<=2*tp+110)'
+
     args = {'omega':omega,'tp':tp , 'ramp': 5 , 'f1':f1 , 'f2':f2, 'alpha':alpha , 'D':-0.5}
 
     
@@ -143,6 +211,7 @@ def CNOT(P):
     H =  [H0,H1,H2,H3,H4]
 
     tlist = np.arange(0,2*tp+110,0.1)
+#    tlist = np.arange(0,tp,0.1)
     options=Options()
     options.atol=1e-8
     options.rtol=1e-6
@@ -161,60 +230,66 @@ def CNOT(P):
     s11 = S[findstate(S,'11')]
 
     T = []
-#    T.append([tensor(basis(3,0),basis(3,0)),(tensor(basis(3,0),basis(3,0))-1j*tensor(basis(3,0),basis(3,1))).unit()])
-#    T.append([tensor(basis(3,0),basis(3,1)),(tensor(basis(3,0),basis(3,1))-1j*tensor(basis(3,0),basis(3,0))).unit()])
-#    T.append([tensor(basis(3,1),basis(3,0)),(tensor(basis(3,1),basis(3,0))+1j*tensor(basis(3,1),basis(3,1))).unit()])
-#    T.append([tensor(basis(3,1),basis(3,1)),(tensor(basis(3,1),basis(3,1))+1j*tensor(basis(3,1),basis(3,0))).unit()])
-    T.append([s00,(s00-1j*s01).unit()])
-    T.append([s01,(s01-1j*s00).unit()])
-    T.append([s10,(s10+1j*s11).unit()])
-    T.append([s11,(s11+1j*s10).unit()])
+    T.append([tensor(basis(3,0),basis(3,0)),(tensor(basis(3,0),basis(3,0))+1j*tensor(basis(3,0),basis(3,1))).unit()])
+    T.append([tensor(basis(3,0),basis(3,1)),(tensor(basis(3,0),basis(3,1))+1j*tensor(basis(3,0),basis(3,0))).unit()])
+    T.append([tensor(basis(3,1),basis(3,0)),(tensor(basis(3,1),basis(3,0))-1j*tensor(basis(3,1),basis(3,1))).unit()])
+    T.append([tensor(basis(3,1),basis(3,1)),(tensor(basis(3,1),basis(3,1))-1j*tensor(basis(3,1),basis(3,0))).unit()])
+#    T.append([s00,(s00-1j*s01).unit()])
+#    T.append([s01,(s01-1j*s00).unit()])
+#    T.append([s10,(s10+1j*s11).unit()])
+#    T.append([s11,(s11+1j*s10).unit()])
 
     fid = []
     leakage = []
     
     
-#    for psi in T:
-#        fid.append(getfid(psi)[0])
-#        leakage.append(getfid(psi)[1])
-#    fid = np.array(fid)
-#    leakage = np.array(leakage)
 
-#    p = Pool(4)
-#    
-#    A = p.map(getfid,T)
-#    fid = [x[0] for x in A]
-#    leakage = [x[1] for x in A]
-#    fid = np.array(fid)
-#    leakage = np.array(leakage)
-#
-#        
-#    p.close()
-#    p.join()
-#    print(P,np.mean(leakage),fid,np.mean(fid))
+
+#     p = Pool(4)
+    
+#     A = p.map(getfid,T)
+#     fid = [x[0] for x in A]
+#     leakage = [x[1] for x in A]
+#     outputstate = [x[2] for x in A]
+#     fid = np.array(fid)
+#     leakage = np.array(leakage)
+
+        
+#     p.close()
+#     p.join()
+# #    print(P,np.mean(leakage),fid,np.mean(fid))
+#     gc.collect()
+# #    
+    
+#     process = np.column_stack([outputstate[i].data.toarray() for i in range(len(outputstate))])[(0,1,3,4),:]
+#     angle = np.angle(process[0][0])
+#     process = process*np.exp(-1j*angle)#global phase
+#     process[:,2] = process[:,2]*np.exp(1j*xita1);process[:,3] = process[:,3]*np.exp(1j*xita1)#qubit 0 relative phase
+#     process[:,1] = process[:,1]*np.exp(1j*xita2);process[:,3] = process[:,3]*np.exp(1j*xita2)#qubit 1 relative phase
+#     targetprocess = 1/np.sqrt(2)*np.array([[1,1j,0,0],[1j,1,0,0],[0,0,1,-1j],[0,0,-1j,1]])
+#     Ufidelity = np.real(np.trace(np.dot(np.conjugate(np.transpose(targetprocess)),process)))/4
+#    Ufidelity = np.abs(np.real(np.trace(np.dot(process,targetprocess))))  
+#    fidelity = np.sum(np.abs(process-targetprocess))
+    
+
+    
+#    psi = [(tensor(basis(3,0),basis(3,0))+tensor(basis(3,1),basis(3,1))),(tensor(basis(3,0),basis(3,0))+1j*tensor(basis(3,0),basis(3,1))+tensor(basis(3,1),basis(3,1))-1j*tensor(basis(3,1),basis(3,0))).unit()]
+#    psi = [(s00+s10).unit(),(s00-1j*s01+s10+1j*s11).unit()]
+    psi = [tensor(basis(3,0),basis(3,0)),(tensor(basis(3,0),basis(3,0))+1j*tensor(basis(3,0),basis(3,1))).unit()]
+    fid,leakage,outputstate = getfid(psi)
+    print(P,np.mean(leakage),fid,np.mean(fid))
+
+    # Operator_View(process,'U_Simulation')
+#    x = getfid(psi)
+#    print(x)
 #    gc.collect()
 
 
     
-#    psi = [tensor(basis(3,1),basis(3,1)),(tensor(basis(3,0),basis(3,1))-1j*tensor(basis(3,0),basis(3,0))).unit()]
-    psi = [s11,(s01-1j*s00).unit()]
-    fid,leakage = getfid(psi)
-    print(P,np.mean(leakage),fid,np.min(fid))
-    gc.collect()
-
-
-    
-
-    
-    return(1-np.mean(fid))
-
-def opt(radio):
-    global D
-    D = radio
-    x0 = [40,0.14*2*np.pi]
-    result = minimize(CNOT, x0, method="Nelder-Mead",options={'disp': True})
-    print(result.fun,result.x[0],result.x[1])
-    return([1-result.fun,result.x[0],result.x[1]])
+#
+    return(1-np.mean(Ufidelity))
+#    return(np.dot(np.conjugate(np.transpose(targetprocess)),process),process,outputstate)
+#
 
 
 if __name__=='__main__':
@@ -226,9 +301,9 @@ if __name__=='__main__':
     
     N = 3
     
-    g = 0.0038 * 2 * np.pi* 2 * np.pi
-    wq= np.array([4.914 , 5.114 ]) * 2 * np.pi
-    eta_q=  np.array([-0.330 , -0.330]) * 2 * np.pi
+    g = 0.0038 * 2 * np.pi
+    wq= np.array([5.110 , 5.042 ]) * 2 * np.pi
+    eta_q=  np.array([-0.2907 , -0.2915]) * 2 * np.pi
     
     
 
@@ -242,10 +317,26 @@ if __name__=='__main__':
     [E,S] = H0.eigenstates()
 
 
-#    fid = CNOT([70.1805137306,1.10522763])
-    fid = CNOT([0,0.060*2*np.pi])
+#    fid = CNOT([51.35037378 ,  0.53879866,0,0])
+#    fid = CNOT([54.05006844  , 0.51929419])
+    fid = CNOT([83.30,0.02816*2*np.pi,0,0])
 #    print(fid)
-#    x0 = [50,0.06*2*np.pi]
+
+#    D = np.linspace(-10,10,1000)
+#    p = Pool(14)
+#
+#    A = p.map(CNOT,D)
+#
+#        
+#    p.close()
+#    p.join()
+#    figure();plot(D,A);xlabel('D');ylabel('delta_x')
+    
+#    x0 = [100,0.015*2*np.pi,0,0]
+#    result = minimize(CNOT, x0, method="Nelder-Mead",options={'disp': True})
+#    print(result.x[0],result.x[1])
+    
+#    x0 = [50,0.060*2*np.pi]
 #    result = minimize(CNOT, x0, method="Nelder-Mead",options={'disp': True})
 #    print(result.x[0],result.x[1])
 
