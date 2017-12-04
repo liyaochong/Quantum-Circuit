@@ -87,6 +87,11 @@ def getfid(T):
     U3 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[l1111]-E[l1101]+E[l1010]-E[l1000])/2*tlist[-1])*basis(N,1)*basis(N,1).dag()
     U4 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[l1111]-E[l1110]+E[l1101]-E[l1100])/2*tlist[-1])*basis(N,1)*basis(N,1).dag()
     
+#    U1 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[l1011]-E[l0011])*tlist[-1])*basis(N,1)*basis(N,1).dag()
+#    U2 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[l0101]-E[l0001])*tlist[-1])*basis(N,1)*basis(N,1).dag()
+#    U3 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[l1010]-E[l1000])*tlist[-1])*basis(N,1)*basis(N,1).dag()
+#    U4 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[l1101]-E[l1100])*tlist[-1])*basis(N,1)*basis(N,1).dag()
+    
     UT = tensor(U1,U2,U3,U4)
     
     fid = fidelity(UT*output.states[-1]*output.states[-1].dag()*UT.dag(),target)
@@ -104,6 +109,12 @@ def getfid(T):
 #        U2 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[l1111]-E[l1011]+E[l0101]-E[l0001])/2*tlist[t])*basis(N,1)*basis(N,1).dag()
 #        U3 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[l1111]-E[l1101]+E[l1010]-E[l1000])/2*tlist[t])*basis(N,1)*basis(N,1).dag()
 #        U4 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[l1111]-E[l1110]+E[l1101]-E[l1100])/2*tlist[t])*basis(N,1)*basis(N,1).dag()
+#        
+#
+##        U1 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[l1011]-E[l0011])*tlist[t])*basis(N,1)*basis(N,1).dag()
+##        U2 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[l0101]-E[l0001])*tlist[t])*basis(N,1)*basis(N,1).dag()
+##        U3 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[l1010]-E[l1000])*tlist[t])*basis(N,1)*basis(N,1).dag()
+##        U4 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[l1101]-E[l1100])*tlist[t])*basis(N,1)*basis(N,1).dag()
 #        U = tensor(U1,U2,U3,U4)
 #        for i in range(4):
 #            n_x[i][t] = expect(U.dag()*(sm[i].dag()+sm[i])*U,output.states[t])
@@ -135,13 +146,13 @@ def getfid(T):
 #    axes[1][1].plot(tlist,n_y[3],label = 'Y3');
 #    axes[1][1].plot(tlist,n_z[3],label = 'Z3');axes[1][1].set_xlabel('t');axes[1][1].set_ylabel('Population')
 #    axes[1][1].legend(loc = 'upper left');plt.show();plt.tight_layout()
-##
-##    fig ,axes = plt.subplots(2,2)
-##    axes[0][0].plot(tlist,l[0]);axes[0][0].set_xlabel('t');axes[0][0].set_ylabel('L0')
-##    axes[0][1].plot(tlist,l[1]);axes[0][1].set_xlabel('t');axes[0][1].set_ylabel('L1')
-##    axes[1][0].plot(tlist,l[2]);axes[1][0].set_xlabel('t');axes[1][0].set_ylabel('L2')
-##    axes[1][1].plot(tlist,l[3]);axes[1][1].set_xlabel('t');axes[1][1].set_ylabel('L3')
-##
+###
+###    fig ,axes = plt.subplots(2,2)
+###    axes[0][0].plot(tlist,l[0]);axes[0][0].set_xlabel('t');axes[0][0].set_ylabel('L0')
+###    axes[0][1].plot(tlist,l[1]);axes[0][1].set_xlabel('t');axes[0][1].set_ylabel('L1')
+###    axes[1][0].plot(tlist,l[2]);axes[1][0].set_xlabel('t');axes[1][0].set_ylabel('L2')
+###    axes[1][1].plot(tlist,l[3]);axes[1][1].set_xlabel('t');axes[1][1].set_ylabel('L3')
+###
 #    sphere = Bloch()
 #    sphere.add_points([n_x[0] , n_y[0] , n_z[0]])
 #    sphere.add_vectors([n_x[0][-1],n_y[0][-1],n_z[0][-1]])
@@ -357,9 +368,14 @@ def CNOT(P):
         
         
     process = np.column_stack([outputstate[i].data.toarray() for i in range(len(outputstate))])[loc,:]
-    angle = np.angle(process[0][0])
-    process = process*np.exp(-1j*angle)#global phase
     
+    
+    targetprocess = 1/np.sqrt(2)*np.array([[1,1j,0,0],[1j,1,0,0],[0,0,1,-1j],[0,0,-1j,1]])
+    targetprocess = tensor(qeye(2),Qobj(targetprocess),qeye(2))
+    targetprocess = targetprocess.data.toarray()
+    Error = np.dot(np.conjugate(np.transpose(targetprocess)),process)
+    angle = np.angle(Error[0][0])
+    Error = Error*np.exp(-1j*angle)#global phase
     for i in range(2**4):
         index = i
         code = ''  #code of state
@@ -367,17 +383,10 @@ def CNOT(P):
             code = str(np.int(np.mod(index,2))) + code
             index = np.floor(index/2)
         if code[1] == '1':
-            process[:,i] = process[:,i]*np.exp(1j*xita1);
+            Error[:,i] = Error[:,i]*np.exp(1j*xita1);
         if code[2] == '1':
-            process[:,i] = process[:,i]*np.exp(1j*xita2);           
-        
-#    process[:,2] = process[:,2]*np.exp(1j*xita1);process[:,3] = process[:,3]*np.exp(1j*xita1)#qubit 0 relative phase
-#    process[:,1] = process[:,1]*np.exp(1j*xita2);process[:,3] = process[:,3]*np.exp(1j*xita2)#qubit 1 relative phase
-    
-    targetprocess = 1/np.sqrt(2)*np.array([[1,1j,0,0],[1j,1,0,0],[0,0,1,-1j],[0,0,-1j,1]])
-    targetprocess = tensor(qeye(2),Qobj(targetprocess),qeye(2))
-    targetprocess = targetprocess.data.toarray()
-    Ufidelity = np.abs(np.trace(np.dot(np.conjugate(np.transpose(targetprocess)),process)))/16
+            Error[:,i] = Error[:,i]*np.exp(1j*xita2);      
+    Ufidelity = np.abs(np.trace(Error))/16
 
     
 
@@ -391,15 +400,15 @@ def CNOT(P):
 #    Operator_View(np.dot(np.conjugate(np.transpose(targetprocess)),process),'U_error')
 
 
-#    fid,leakage,outputstate = getfid([(T[0][0]+T[1][0]).unit() , (T[0][1]+T[1][1]).unit()])
+#    fid,leakage,outputstate = getfid([(T[7][0]).unit() , (T[7][1]).unit()])
 #    print(P,np.mean(leakage),np.mean(fid))
 
 
     print(P,np.mean(leakage),np.mean(fid),Ufidelity)
     
 
-    return(Ufidelity)
-#    return(process,T)
+    return(1-Ufidelity)
+#    return(process)
 
 
 
@@ -411,47 +420,47 @@ if __name__=='__main__':
     
     global H0,E,S
     
-    wrange = np.linspace(4.946,5.110,165)*2*np.pi
-    wfid = []
-    for w in wrange:
-        g = np.array([0.0038 , 0.0038 , 0.0038]) * 2 * np.pi
-        wq= np.array([4.946 , 5.110 , 5.042 , 5.155 ]) * 2 * np.pi
-        eta_q=  np.array([-0.299 , -0.2907 , -0.2915 , -0.2976]) * 2 * np.pi
-        wq[0] = w
-        HCoupling=0
-        for II in range(0,NumQ-1):
-            HCoupling+= g[II]* (sm[II].dag()  + sm[II])* (sm[II+1].dag()  + sm[II+1]) 
-        H0=HCoupling
-        for II in range(0,NumQ):
-            H0+= eta_q[II]*E_uc[II]+wq[II]*Sn[II]
-        [E,S] = H0.eigenstates()
+#    wrange = np.linspace(4.946,5.110,21)*2*np.pi
+#    wfid = []
+#    for w in wrange:
+#        g = np.array([0.0038 , 0.0038 , 0.0038]) * 2 * np.pi
+#        wq= np.array([4.946 , 5.110 , 5.042 , 5.155 ]) * 2 * np.pi
+#        eta_q=  np.array([-0.299 , -0.2907 , -0.2915 , -0.2976]) * 2 * np.pi
+#        wq[0] = w
+#        HCoupling=0
+#        for II in range(0,NumQ-1):
+#            HCoupling+= g[II]* (sm[II].dag()  + sm[II])* (sm[II+1].dag()  + sm[II+1]) 
+#        H0=HCoupling
+#        for II in range(0,NumQ):
+#            H0+= eta_q[II]*E_uc[II]+wq[II]*Sn[II]
+#        [E,S] = H0.eigenstates()
+#        
+#        l1111 = findstate(S,'1111');l0111 = findstate(S,'0111');l1011 = findstate(S,'1011');l0011 = findstate(S,'0011');
+#        l1111 = findstate(S,'1111');l1011 = findstate(S,'1011');l0101 = findstate(S,'0101');l0001 = findstate(S,'0001');
+#        l1111 = findstate(S,'1111');l1101 = findstate(S,'1101');l1010 = findstate(S,'1010');l1000 = findstate(S,'1000');
+#        l1111 = findstate(S,'1111');l1110 = findstate(S,'1110');l1101 = findstate(S,'1101');l1100 = findstate(S,'1100');
+#                         
+#                         
+#        fid = CNOT([83.30,0.02816*2*np.pi,0,0])
+#        wfid.append(fid)
+#        gc.collect()
+#    figure();plot(wrange/2/np.pi,wfid);xlabel('wq0');ylabel('fidelity');
         
-        l1111 = findstate(S,'1111');l0111 = findstate(S,'0111');l1011 = findstate(S,'1011');l0011 = findstate(S,'0011');
-        l1111 = findstate(S,'1111');l1011 = findstate(S,'1011');l0101 = findstate(S,'0101');l0001 = findstate(S,'0001');
-        l1111 = findstate(S,'1111');l1101 = findstate(S,'1101');l1010 = findstate(S,'1010');l1000 = findstate(S,'1000');
-        l1111 = findstate(S,'1111');l1110 = findstate(S,'1110');l1101 = findstate(S,'1101');l1100 = findstate(S,'1100');
-                         
-                         
-        fid = CNOT([83.30,0.02816*2*np.pi,0,0])
-        wfid.append(fid)
-        gc.collect()
-    figure();plot(wrange/2/np.pi,wfid);xlabel('wq0');ylabel('fidelity');
-        
-#    g = np.array([0.0038 , 0.0038 , 0.0038]) * 2 * np.pi
-#    wq= np.array([4.980 , 5.110 , 5.042 , 5.155 ]) * 2 * np.pi
-#    eta_q=  np.array([-0.299 , -0.2907 , -0.2915 , -0.2976]) * 2 * np.pi
-#    HCoupling=0
-#    for II in range(0,NumQ-1):
-#        HCoupling+= g[II]* (sm[II].dag()  + sm[II])* (sm[II+1].dag()  + sm[II+1]) 
-#    H0=HCoupling
-#    for II in range(0,NumQ):
-#        H0+= eta_q[II]*E_uc[II]+wq[II]*Sn[II]
-#    [E,S] = H0.eigenstates()
-#    
-#    l1111 = findstate(S,'1111');l0111 = findstate(S,'0111');l1011 = findstate(S,'1011');l0011 = findstate(S,'0011');
-#    l1111 = findstate(S,'1111');l1011 = findstate(S,'1011');l0101 = findstate(S,'0101');l0001 = findstate(S,'0001');
-#    l1111 = findstate(S,'1111');l1101 = findstate(S,'1101');l1010 = findstate(S,'1010');l1000 = findstate(S,'1000');
-#    l1111 = findstate(S,'1111');l1110 = findstate(S,'1110');l1101 = findstate(S,'1101');l1100 = findstate(S,'1100');
+    g = np.array([0.0038 , 0.0038 , 0.0038]) * 2 * np.pi
+    wq= np.array([4.946 , 5.110 , 5.042 , 5.155 ]) * 2 * np.pi
+    eta_q=  np.array([-0.299 , -0.2907 , -0.2915 , -0.2976]) * 2 * np.pi
+    HCoupling=0
+    for II in range(0,NumQ-1):
+        HCoupling+= g[II]* (sm[II].dag()  + sm[II])* (sm[II+1].dag()  + sm[II+1]) 
+    H0=HCoupling
+    for II in range(0,NumQ):
+        H0+= eta_q[II]*E_uc[II]+wq[II]*Sn[II]
+    [E,S] = H0.eigenstates()
+    
+    l1111 = findstate(S,'1111');l0111 = findstate(S,'0111');l1011 = findstate(S,'1011');l0011 = findstate(S,'0011');
+    l1111 = findstate(S,'1111');l1011 = findstate(S,'1011');l0101 = findstate(S,'0101');l0001 = findstate(S,'0001');
+    l1111 = findstate(S,'1111');l1101 = findstate(S,'1101');l1010 = findstate(S,'1010');l1000 = findstate(S,'1000');
+    l1111 = findstate(S,'1111');l1110 = findstate(S,'1110');l1101 = findstate(S,'1101');l1100 = findstate(S,'1100');
                          
     
     
@@ -468,9 +477,9 @@ if __name__=='__main__':
 
 
     
-#    x0 = [80,0.03*2*np.pi,0,0]
-#    result = minimize(CNOT, x0, method="Nelder-Mead",options={'disp': True})
-#    print(result.x[0],result.x[1])
+    x0 = [80,0.03*2*np.pi,0,0]
+    result = minimize(CNOT, x0, method="Nelder-Mead",options={'disp': True})
+    print(result.x[0],result.x[1])
 
 
     

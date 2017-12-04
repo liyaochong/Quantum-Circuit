@@ -27,8 +27,8 @@ def getfid(T):
     target = T[1]
     output = mesolve(H,psi,tlist,[],[],args = args,options = options)
     
-    U1 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[2]-E[0]+E[5]-E[1])/2*tlist[-1])*basis(N,1)*basis(N,1).dag()
-    U2 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[1]-E[0]+E[5]-E[2])/2*tlist[-1])*basis(N,1)*basis(N,1).dag()
+    U1 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[l11]-E[l01]+E[l10]-E[l00])/2*tlist[-1])*basis(N,1)*basis(N,1).dag()
+    U2 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[l11]-E[l10]+E[l01]-E[l00])/2*tlist[-1])*basis(N,1)*basis(N,1).dag()
 #    U1 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[2]-E[0])*tlist[-1])*basis(N,1)*basis(N,1).dag()
 #    U2 = basis(N,0)*basis(N,0).dag()+np.exp(1j*(E[1]-E[0])*tlist[-1])*basis(N,1)*basis(N,1).dag()
     UT = tensor(U1,U2)
@@ -39,55 +39,55 @@ def getfid(T):
     
     
 #==============================================================================
-#    n_x0 = [] ; n_y0 = [] ; n_z0 = [];
-#    n_x1 = [] ; n_y1 = [] ; n_z1 = [];
-#    l0 = [];l1 = [];R = []
-#    for t in range(0,len(tlist)):
-##        U0 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(E[2]-E[0]+E[5]-E[1])/2*tlist[t])*basis(3,1)*basis(3,1).dag()
-##        U1 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(E[1]-E[0]+E[5]-E[2])/2*tlist[t])*basis(3,1)*basis(3,1).dag()
+    n_x0 = [] ; n_y0 = [] ; n_z0 = [];
+    n_x1 = [] ; n_y1 = [] ; n_z1 = [];
+    l0 = [];l1 = [];R = []
+    for t in range(0,len(tlist)):
+        U0 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(E[l11]-E[l01]+E[l10]-E[l00])/2*tlist[t])*basis(3,1)*basis(3,1).dag()
+        U1 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(E[l11]-E[l10]+E[l01]-E[l00])/2*tlist[t])*basis(3,1)*basis(3,1).dag()
 #        U0 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(E[2]-E[0])*tlist[t])*basis(3,1)*basis(3,1).dag()
 #        U1 = basis(3,0)*basis(3,0).dag()+np.exp(1j*(E[1]-E[0])*tlist[t])*basis(3,1)*basis(3,1).dag()
-#        U = tensor(U0,U1)
-#    #        U = (1j*H0*tlist[t]).expm()
-#        
-#        opx0 = U.dag()*(sm0.dag()+sm0)*U
-#        opy0 = U.dag()*(1j*sm0.dag()-1j*sm0)*U
-#        opz0 = tensor(qeye(3),qeye(3))-2*sm0.dag()*sm0
-#        opx1 = U.dag()*(sm1.dag()+sm1)*U
-#        opy1 = U.dag()*(1j*sm1.dag()-1j*sm1)*U
-#        opz1 = tensor(qeye(3),qeye(3))-2*sm1.dag()*sm1
-#        n_x0.append(expect(opx0,output.states[t]))
-#        n_y0.append(expect(opy0,output.states[t]))
-#        n_z0.append(expect(opz0,output.states[t]))
-#        n_x1.append(expect(opx1,output.states[t]))
-#        n_y1.append(expect(opy1,output.states[t]))
-#        n_z1.append(expect(opz1,output.states[t]))
-#        l0.append(expect(E_uc0,output.states[t]))
-#        l1.append(expect(E_uc1,output.states[t]))
-#
-#    n_x0 = np.array(n_x0);n_y0 = np.array(n_y0);n_z0 = np.array(n_z0);
-#    n_x1 = np.array(n_x1);n_y1 = np.array(n_y1);n_z1 = np.array(n_z1);
-##    R = np.sqrt(np.square(n_x0-n_x1)+np.square(n_y0-n_y1)+np.square(n_z0-n_z1))
-#    fig ,axes = plt.subplots(2,2)
-#    axes[0][0].plot(tlist,n_x0,label = 'X0');
-#    axes[0][0].plot(tlist,n_y0,label = 'Y0');
-#    axes[0][0].plot(tlist,n_z0,label = 'Z0');axes[0][0].set_xlabel('t');axes[0][0].set_ylabel('Population')
-#    axes[0][0].legend(loc = 'upper left');plt.show()
-#    axes[0][1].plot(tlist,n_x1,label = 'X1');
-#    axes[0][1].plot(tlist,n_y1,label = 'Y1');
-#    axes[0][1].plot(tlist,n_z1,label = 'Z1');axes[0][1].set_xlabel('t');axes[0][1].set_ylabel('Population')
-#    axes[0][1].legend(loc = 'upper left');plt.show();plt.tight_layout()
-#    axes[1][0].plot(tlist,l0);axes[1][0].set_xlabel('t');axes[1][0].set_ylabel('L0')
-#    axes[1][1].plot(tlist,l1);axes[1][1].set_xlabel('t');axes[1][1].set_ylabel('L1')
-#    sphere = Bloch()
-#    sphere.add_points([n_x0 , n_y0 , n_z0])
-#    sphere.add_vectors([n_x0[-1],n_y0[-1],n_z0[-1]])
-#    sphere.make_sphere() 
-#    sphere = Bloch()
-#    sphere.add_points([n_x1 , n_y1 , n_z1])
-#    sphere.add_vectors([n_x1[-1],n_y1[-1],n_z1[-1]])
-#    sphere.make_sphere() 
-#    plt.show() 
+        U = tensor(U0,U1)
+    #        U = (1j*H0*tlist[t]).expm()
+        
+        opx0 = U.dag()*(sm0.dag()+sm0)*U
+        opy0 = U.dag()*(1j*sm0.dag()-1j*sm0)*U
+        opz0 = tensor(qeye(3),qeye(3))-2*sm0.dag()*sm0
+        opx1 = U.dag()*(sm1.dag()+sm1)*U
+        opy1 = U.dag()*(1j*sm1.dag()-1j*sm1)*U
+        opz1 = tensor(qeye(3),qeye(3))-2*sm1.dag()*sm1
+        n_x0.append(expect(opx0,output.states[t]))
+        n_y0.append(expect(opy0,output.states[t]))
+        n_z0.append(expect(opz0,output.states[t]))
+        n_x1.append(expect(opx1,output.states[t]))
+        n_y1.append(expect(opy1,output.states[t]))
+        n_z1.append(expect(opz1,output.states[t]))
+        l0.append(expect(E_uc0,output.states[t]))
+        l1.append(expect(E_uc1,output.states[t]))
+
+    n_x0 = np.array(n_x0);n_y0 = np.array(n_y0);n_z0 = np.array(n_z0);
+    n_x1 = np.array(n_x1);n_y1 = np.array(n_y1);n_z1 = np.array(n_z1);
+
+    fig ,axes = plt.subplots(2,2)
+    axes[0][0].plot(tlist,n_x0,label = 'X0');
+    axes[0][0].plot(tlist,n_y0,label = 'Y0');
+    axes[0][0].plot(tlist,n_z0,label = 'Z0');axes[0][0].set_xlabel('t');axes[0][0].set_ylabel('Population')
+    axes[0][0].legend(loc = 'upper left');plt.show()
+    axes[0][1].plot(tlist,n_x1,label = 'X1');
+    axes[0][1].plot(tlist,n_y1,label = 'Y1');
+    axes[0][1].plot(tlist,n_z1,label = 'Z1');axes[0][1].set_xlabel('t');axes[0][1].set_ylabel('Population')
+    axes[0][1].legend(loc = 'upper left');plt.show();plt.tight_layout()
+    axes[1][0].plot(tlist,l0);axes[1][0].set_xlabel('t');axes[1][0].set_ylabel('L0')
+    axes[1][1].plot(tlist,l1);axes[1][1].set_xlabel('t');axes[1][1].set_ylabel('L1')
+    sphere = Bloch()
+    sphere.add_points([n_x0 , n_y0 , n_z0])
+    sphere.add_vectors([n_x0[-1],n_y0[-1],n_z0[-1]])
+    sphere.make_sphere() 
+    sphere = Bloch()
+    sphere.add_points([n_x1 , n_y1 , n_z1])
+    sphere.add_vectors([n_x1[-1],n_y1[-1],n_z1[-1]])
+    sphere.make_sphere() 
+    plt.show() 
 
     
 ##==============================================================================
@@ -101,7 +101,7 @@ def findstate(S,state):
     for i in range(9):
         s0 = ptrace(S[i],0)[e0][0][e0]
         s1 = ptrace(S[i],1)[e1][0][e1]
-        if abs(s0)>0.5 and abs(s1)>0.5 :
+        if abs(s0)>=0.5 and abs(s1)>=0.5 :
             l = i
     if l == None:
         print('No state')
@@ -157,17 +157,15 @@ def CNOT(P):
     omega = P[1]
     xita1 = P[2]
     xita2 = P[3]
-#    D = P
-#    tp = 400
-#    omega = 0.060*2*np.pi
+
     
 
     global H,tlist,args,options
     
-    f1 = (E[1]-E[0]+E[5]-E[2])/2
-    f2 = (E[2]-E[0]+E[5]-E[1])/2
-#    f1 = E[1]-E[0]#CR驱动频率
-#    f2 = E[2]-E[0]#X波频率
+    f1 = (E[l11]-E[l10]+E[l01]-E[l00])/2    #CR pulse frequency
+    f2 = (E[l11]-E[l01]+E[l10]-E[l00])/2    #X pulse frequency
+
+
     alpha = 0.05
     # w1 = '(-0.069066*np.pi/2*np.exp(-(t-20)**2/2.0/6**2))*(0<t<=40)'
 
@@ -210,8 +208,8 @@ def CNOT(P):
     # H = [H0,H1,H2,H3,H4,H5,H6,H7,H8]
     H =  [H0,H1,H2,H3,H4]
 
-    tlist = np.arange(0,2*tp+110,0.1)
-#    tlist = np.arange(0,tp,0.1)
+#    tlist = np.arange(0,2*tp+110,0.1)
+    tlist = np.arange(0,tp,0.1)
     options=Options()
     options.atol=1e-8
     options.rtol=1e-6
@@ -230,10 +228,10 @@ def CNOT(P):
     s11 = S[findstate(S,'11')]
 
     T = []
-    T.append([tensor(basis(3,0),basis(3,0)),(tensor(basis(3,0),basis(3,0))+1j*tensor(basis(3,0),basis(3,1))).unit()])
-    T.append([tensor(basis(3,0),basis(3,1)),(tensor(basis(3,0),basis(3,1))+1j*tensor(basis(3,0),basis(3,0))).unit()])
-    T.append([tensor(basis(3,1),basis(3,0)),(tensor(basis(3,1),basis(3,0))-1j*tensor(basis(3,1),basis(3,1))).unit()])
-    T.append([tensor(basis(3,1),basis(3,1)),(tensor(basis(3,1),basis(3,1))-1j*tensor(basis(3,1),basis(3,0))).unit()])
+    T.append([tensor(basis(3,0),basis(3,0)),(tensor(basis(3,0),basis(3,0))-1j*tensor(basis(3,0),basis(3,1))).unit()])
+    T.append([tensor(basis(3,0),basis(3,1)),(tensor(basis(3,0),basis(3,1))-1j*tensor(basis(3,0),basis(3,0))).unit()])
+    T.append([tensor(basis(3,1),basis(3,0)),(tensor(basis(3,1),basis(3,0))+1j*tensor(basis(3,1),basis(3,1))).unit()])
+    T.append([tensor(basis(3,1),basis(3,1)),(tensor(basis(3,1),basis(3,1))+1j*tensor(basis(3,1),basis(3,0))).unit()])
 #    T.append([s00,(s00-1j*s01).unit()])
 #    T.append([s01,(s01-1j*s00).unit()])
 #    T.append([s10,(s10+1j*s11).unit()])
@@ -245,43 +243,50 @@ def CNOT(P):
     
 
 
-#     p = Pool(4)
+#    p = Pool(4)
+#    
+#    A = p.map(getfid,T)
+#    fid = [x[0] for x in A]
+#    leakage = [x[1] for x in A]
+#    outputstate = [x[2] for x in A]
+#    fid = np.array(fid)
+#    leakage = np.array(leakage)
+#
+#        
+#    p.close()
+#    p.join()
+##    print(P,np.mean(leakage),fid,np.mean(fid))
+#    gc.collect()
+##    
+#    
+    process = np.column_stack([outputstate[i].data.toarray() for i in range(len(outputstate))])[(0,1,3,4),:]
+    targetprocess = 1/np.sqrt(2)*np.array([[1,1j,0,0],[1j,1,0,0],[0,0,1,-1j],[0,0,-1j,1]])
     
-#     A = p.map(getfid,T)
-#     fid = [x[0] for x in A]
-#     leakage = [x[1] for x in A]
-#     outputstate = [x[2] for x in A]
-#     fid = np.array(fid)
-#     leakage = np.array(leakage)
+    Error = np.dot(np.conjugate(np.transpose(targetprocess)),process)
+    angle = np.angle(Error[0][0])
+    Error = Error*np.exp(-1j*angle)#global phase
+    for i in range(2**2):
+        index = i
+        code = ''  #code of state
+        for j in range(2):
+            code = str(np.int(np.mod(index,2))) + code
+            index = np.floor(index/2)
+        if code[1] == '1':
+            Error[:,i] = Error[:,i]*np.exp(1j*xita1);
+        if code[2] == '1':
+            Error[:,i] = Error[:,i]*np.exp(1j*xita2);      
+    Ufidelity = np.abs(np.trace(Error))/4
 
-        
-#     p.close()
-#     p.join()
-# #    print(P,np.mean(leakage),fid,np.mean(fid))
-#     gc.collect()
-# #    
-    
-#     process = np.column_stack([outputstate[i].data.toarray() for i in range(len(outputstate))])[(0,1,3,4),:]
-#     angle = np.angle(process[0][0])
-#     process = process*np.exp(-1j*angle)#global phase
-#     process[:,2] = process[:,2]*np.exp(1j*xita1);process[:,3] = process[:,3]*np.exp(1j*xita1)#qubit 0 relative phase
-#     process[:,1] = process[:,1]*np.exp(1j*xita2);process[:,3] = process[:,3]*np.exp(1j*xita2)#qubit 1 relative phase
-#     targetprocess = 1/np.sqrt(2)*np.array([[1,1j,0,0],[1j,1,0,0],[0,0,1,-1j],[0,0,-1j,1]])
-#     Ufidelity = np.real(np.trace(np.dot(np.conjugate(np.transpose(targetprocess)),process)))/4
-#    Ufidelity = np.abs(np.real(np.trace(np.dot(process,targetprocess))))  
-#    fidelity = np.sum(np.abs(process-targetprocess))
-    
 
     
 #    psi = [(tensor(basis(3,0),basis(3,0))+tensor(basis(3,1),basis(3,1))),(tensor(basis(3,0),basis(3,0))+1j*tensor(basis(3,0),basis(3,1))+tensor(basis(3,1),basis(3,1))-1j*tensor(basis(3,1),basis(3,0))).unit()]
 #    psi = [(s00+s10).unit(),(s00-1j*s01+s10+1j*s11).unit()]
     psi = [tensor(basis(3,0),basis(3,0)),(tensor(basis(3,0),basis(3,0))+1j*tensor(basis(3,0),basis(3,1))).unit()]
     fid,leakage,outputstate = getfid(psi)
-    print(P,np.mean(leakage),fid,np.mean(fid))
+    print(P,np.mean(leakage),fid,np.mean(fid),Ufidelity)
 
-    # Operator_View(process,'U_Simulation')
-#    x = getfid(psi)
-#    print(x)
+#    Operator_View(process,'U_Simulation')
+
 #    gc.collect()
 
 
@@ -302,9 +307,10 @@ if __name__=='__main__':
     N = 3
     
     g = 0.0038 * 2 * np.pi
-    wq= np.array([5.110 , 5.042 ]) * 2 * np.pi
-    eta_q=  np.array([-0.2907 , -0.2915]) * 2 * np.pi
-    
+#    wq= np.array([5.110 , 5.042  ]) * 2 * np.pi
+#    eta_q=  np.array([-0.2907 , -0.2915]) * 2 * np.pi
+    wq= np.array([5.115 , 5.253  ]) * 2 * np.pi
+    eta_q=  np.array([-0.2876 , -0.2984]) * 2 * np.pi
     
 
     sm0=tensor(destroy(N),qeye(N))
@@ -315,11 +321,12 @@ if __name__=='__main__':
     
     H0= (wq[0]) * sm0.dag()*sm0 + (wq[1]) * sm1.dag()*sm1 + eta_q[0]*E_uc0 + eta_q[1]*E_uc1 + g * (sm0.dag()+sm0) * (sm1.dag()+sm1)
     [E,S] = H0.eigenstates()
+    l11 = findstate(S,'11');l10 = findstate(S,'10');l01 = findstate(S,'01');l00 = findstate(S,'00');
 
 
 #    fid = CNOT([51.35037378 ,  0.53879866,0,0])
-#    fid = CNOT([54.05006844  , 0.51929419])
-    fid = CNOT([83.30,0.02816*2*np.pi,0,0])
+    fid = CNOT([1126.5  , 0.066357*2*np.pi,0,0])
+#    fid = CNOT([83.30,0.02816*2*np.pi,0,0])
 #    print(fid)
 
 #    D = np.linspace(-10,10,1000)
@@ -332,7 +339,7 @@ if __name__=='__main__':
 #    p.join()
 #    figure();plot(D,A);xlabel('D');ylabel('delta_x')
     
-#    x0 = [100,0.015*2*np.pi,0,0]
+#    x0 = [110,0.06*2*np.pi,0,0]
 #    result = minimize(CNOT, x0, method="Nelder-Mead",options={'disp': True})
 #    print(result.x[0],result.x[1])
     
