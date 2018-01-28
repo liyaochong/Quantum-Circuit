@@ -32,7 +32,7 @@ elseif strcmpi(Var,'FluxBias')
        I(i) = (w01(i+1)-w01(i))*(2*e);
    end   
 %    delete(gcp('nocreate'));%¹Ø±ÕPool
-   x=-0.02:0.1/100:0.02;
+   x=0.48:0.1/100:0.52;
    figure();
    plot(x,w0);hold on;plot(x,w1,'--');hold on;plot(x,w2,'-.');hold on;plot(x,w3,':');hold on;
    legend('\omega_{0}','\omega_{1}','\omega_{2}','\omega_{3}')

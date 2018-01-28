@@ -171,14 +171,14 @@ def CNOT(P):
 
     # w3 = '(0.03332*np.pi*(np.exp(-(t-60-tp)**2/2.0/6**2)*np.cos(t*omega3)+(t-60-tp)/2/6**2/'+str(eta_q[0])+'*np.exp(-(t-tp-60)**2/2.0/6**2)*np.cos(t*omega3-np.pi/2)))*((40+tp)<t<=80+tp)'
     
-    w1 = 'omega/2*((erf((t-8)/ramp)-erf((t-tp+8)/ramp))*(np.cos(f1*t)))*(0<t<=tp)'
-#    w1 = 'omega/2*((erf((t-8)/ramp)-erf((t-tp+8)/ramp))*(np.cos(f1*t))+D*(2*np.exp(-(t-8)**2/ramp**2)/np.sqrt(np.pi)/ramp-2*np.exp(-(t-tp+8)**2/ramp**2)/np.sqrt(np.pi)/ramp)/'+str(eta_q[0])+'*(np.cos(f1*t-np.pi/2)))*(0<t<=tp)'
+#    w1 = 'omega/2*((erf((t-8)/ramp)-erf((t-tp+8)/ramp))*(np.cos(f1*t)))*(0<t<=tp)'
+    w1 = 'omega/2*((erf((t-8)/ramp)-erf((t-tp+8)/ramp))*(np.cos(f1*t))+D*(2*np.exp(-(t-8)**2/ramp**2)/np.sqrt(np.pi)/ramp-2*np.exp(-(t-tp+8)**2/ramp**2)/np.sqrt(np.pi)/ramp)/'+str(eta_q[0])+'*(np.cos(f1*t-np.pi/2)))*(0<t<=tp)'
 #    w1 = 'omega*(np.exp(-(t-15)**2/2/5**2)*((0)<t<=15)+1*(15<t<=tp-15)+np.exp(-(t-tp+15)**2/2/5**2)*((tp-15)<t<=tp))*(np.cos(f1*t))'
     
     w2 = '(0.03332*2*np.pi*(np.exp(-(t-30-tp)**2/2.0/6**2)*np.cos(t*f2)+(t-30-tp)/2/6**2/'+str(eta_q[0])+'*np.exp(-(t-30-tp)**2/2.0/6**2)*np.cos(t*f2-np.pi/2)))*((10+tp)<t<=50+tp)'
 
-#    w3 = 'omega/2*((erf((t-tp-60-8)/ramp)-erf((t-tp-60-tp+8)/ramp))*(np.cos(f1*t+np.pi))+D*(2*np.exp(-(t-tp-60-8)**2/ramp**2)/np.sqrt(np.pi)/ramp-2*np.exp(-(t-tp-60-tp+8)**2/ramp**2)/np.sqrt(np.pi)/ramp)/'+str(eta_q[0])+'*(np.cos(f1*t+np.pi-np.pi/2)))*(tp+60<t<=2*tp+60)'
-    w3 = 'omega/2*(erf((t-tp-60-8)/ramp)-erf((t-tp-60-tp+8)/ramp))*(np.cos(f1*t+np.pi))*(tp+60<t<=2*tp+60)'
+    w3 = 'omega/2*((erf((t-tp-60-8)/ramp)-erf((t-tp-60-tp+8)/ramp))*(np.cos(f1*t+np.pi))+D*(2*np.exp(-(t-tp-60-8)**2/ramp**2)/np.sqrt(np.pi)/ramp-2*np.exp(-(t-tp-60-tp+8)**2/ramp**2)/np.sqrt(np.pi)/ramp)/'+str(eta_q[0])+'*(np.cos(f1*t+np.pi-np.pi/2)))*(tp+60<t<=2*tp+60)'
+#    w3 = 'omega/2*(erf((t-tp-60-8)/ramp)-erf((t-tp-60-tp+8)/ramp))*(np.cos(f1*t+np.pi))*(tp+60<t<=2*tp+60)'
 #    w3 = 'omega*(np.exp(-(t-tp-75)**2/2/5**2)*(tp+60<t<=tp+75)+1*(tp+75<t<=2*tp+45)+np.exp(-(t-2*tp-45)**2/2/5**2)*((2*tp+45)<t<=2*tp+60))*(np.cos(f1*t+np.pi))'
 
     w4 = '(0.03332*2*np.pi*(np.exp(-(t-90-2*tp)**2/2.0/6**2)*np.cos(t*f2)+(t-90-2*tp)/2/6**2/'+str(eta_q[0])+'*np.exp(-(t-90-2*tp)**2/2.0/6**2)*np.cos(t*f2-np.pi/2)))*((2*tp+70)<t<=2*tp+110)'
@@ -194,7 +194,7 @@ def CNOT(P):
 #    w8 = 'alpha*omega/2*(erf((t-tp-60-8)/5)-erf((t-tp-60-tp+8)/5))*(np.cos(f1*t+np.pi+0.5*np.pi))*(tp+60<t<=2*tp+60)'
     w8 = 'alpha*(0.03332*2*np.pi*(np.exp(-(t-90-2*tp)**2/2.0/6**2)*np.cos(t*f2)+(t-90-2*tp)/2/6**2/'+str(eta_q[0])+'*np.exp(-(t-90-2*tp)**2/2.0/6**2)*np.cos(t*f2-np.pi/2)))*((2*tp+70)<t<=2*tp+110)'
 
-    args = {'omega':omega,'tp':tp , 'ramp': 5 , 'f1':f1 , 'f2':f2, 'alpha':alpha , 'D':-0.5}
+    args = {'omega':omega,'tp':tp , 'ramp': 5 , 'f1':f1 , 'f2':f2, 'alpha':alpha , 'D':1.274}
 
     
     H1 = [sm0+sm0.dag(),w1]
@@ -281,22 +281,23 @@ def CNOT(P):
     gc.collect()
     
     
-#    psi = [(tensor(basis(3,0),basis(3,0))+tensor(basis(3,1),basis(3,1))),(tensor(basis(3,0),basis(3,0))+1j*tensor(basis(3,0),basis(3,1))+tensor(basis(3,1),basis(3,1))-1j*tensor(basis(3,1),basis(3,0))).unit()]
+#    psi = [T[0][0],T[0][1]]
 #    psi = [(s00+s10).unit(),(s00-1j*s01+s10+1j*s11).unit()]
 #    psi = [tensor(basis(3,0),basis(3,0)),(tensor(basis(3,0),basis(3,0))+1j*tensor(basis(3,0),basis(3,1))).unit()]
 #    fid,leakage,outputstate = getfid(psi)
-    print(P,(wq[0]-wq[1])/2/np.pi,g/2/np.pi,fid,np.mean(fid),Ufidelity)
+    print(tp,omega/2/np.pi,(wq[0]-wq[1])/2/np.pi,g/2/np.pi,fid,np.mean(fid),Ufidelity)
 
 #    Operator_View(process,'U_Simulation')
 
-
-
-
+    ZZ = (E[l11]-E[l10]-(E[l01]+E[l00]))
+#    ZZ = 2*g**2/(wq[0]-wq[1])/((wq[0]-wq[1])/(2*eta_q[1])-eta_q[1]/2/(wq[0]-wq[1]))
+    test = np.pi/4/ZZ/(2*tp+60)
+    print(ZZ/2/np.pi,test)
     
 #
-    return(1-np.mean(Ufidelity))
+#    return(1-np.mean(Ufidelity))
 #    return(Error)
-#
+    return(-Ufidelity)
 
 
 if __name__=='__main__':
@@ -308,11 +309,15 @@ if __name__=='__main__':
     
     N = 3
     
-    g = 0.0038 * 2 * np.pi
-    wq= np.array([5.100 , 4.950  ]) * 2 * np.pi
+    g = 0.0006804 * 2 * np.pi
+    wq= np.array([5.100 , 5.02 ]) * 2 * np.pi
     eta_q=  np.array([-0.250 , -0.250]) * 2 * np.pi
 #    wq= np.array([5.115 , 5.253  ]) * 2 * np.pi
 #    eta_q=  np.array([-0.2876 , -0.2984]) * 2 * np.pi
+
+                     
+#    delta = 0.08047*2*np.pi
+#    wq[1] = wq[0]-delta
     
 
     sm0=tensor(destroy(N),qeye(N))
@@ -324,11 +329,29 @@ if __name__=='__main__':
     H0= (wq[0]) * sm0.dag()*sm0 + (wq[1]) * sm1.dag()*sm1 + eta_q[0]*E_uc0 + eta_q[1]*E_uc1 + g * (sm0.dag()+sm0) * (sm1.dag()+sm1)
     [E,S] = H0.eigenstates()
     l11 = findstate(S,'11');l10 = findstate(S,'10');l01 = findstate(S,'01');l00 = findstate(S,'00');
+    
+#    ZZ = 2*g**2/(wq[0]-wq[1])/(delta/2/eta_q[0]-eta_q[0]/2/delta)
+#    ZZ = 2*g**2*(1/(delta-eta_q[0])-1/(delta+eta_q[0]))
+#    ZZ = (E[l11]-E[l10]-(E[l01]+E[l00]))
+#    test = np.pi/4/ZZ/(2*163.98+60)
+#    print(test)
 
-
+    
+    
+#    tplist = np.linspace(163.98-5,163.98+5,100)
+#    fide = [];
+#    for tp in tplist:
+#        fide.append(CNOT([tp  , 0.08965*2*np.pi]))
+#    figure();plot(2*tplist+60,fide);xlabel('T');ylabel('fidelity')
+#    omegalist = np.linspace(0.08965-0.005,0.08965+0.005,101)*2*np.pi
+#    fide = [];
+#    for omega in omegalist:
+#        fide.append(CNOT([163.98  , omega]))
+#    figure();plot(omegalist/2/np.pi,fide);xlabel('omega');ylabel('fidelity')
+    
 #    fid = CNOT([51.35037378 ,  0.53879866,0,0])
-#    fid = CNOT([1126.5  , 0.066357*2*np.pi,0,0])
-#    fid = CNOT([83.30,0.02816*2*np.pi,0,0])
+#    fid = CNOT([196.88  , 0.09756*2*np.pi])
+#    fid = CNOT([99.732])
 #    print(fid)
 
 #    D = np.linspace(-10,10,1000)
@@ -341,9 +364,9 @@ if __name__=='__main__':
 #    p.join()
 #    figure();plot(D,A);xlabel('D');ylabel('delta_x')
     
-    x0 = [40,0.085*2*np.pi]
+    x0 = [100,0.09*2*np.pi]
     result = minimize(CNOT, x0, method="Nelder-Mead",options={'disp': True})
-    print(result.x[0],result.x[1])
+    print(result.x)
     
 #    x0 = [50,0.060*2*np.pi]
 #    result = minimize(CNOT, x0, method="Nelder-Mead",options={'disp': True})

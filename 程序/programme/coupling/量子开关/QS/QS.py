@@ -209,6 +209,7 @@ def Z_pulse_CZ(t , args):
         A = 2.4048*omega*np.cos(omega*t)
     else:
         A = f(wg(t))*omega*np.cos(omega*t)
+    
     return(A)
     
 def findstate(S,state):
@@ -227,7 +228,13 @@ def findstate(S,state):
 def CZgate(P):
     tp = P[0]
     delta = P[1]
-    omega = 0.16*2*np.pi
+    if delta>g:
+        delta = g
+    elif delta<0:
+        delta = 0
+    omega = 0.12*2*np.pi
+    
+    print(P[0],P[1]/2/np.pi)
     
     
     
@@ -256,8 +263,8 @@ def CZgate(P):
     UT = tensor(U1,U2)
     
 #    target = tensor(basis(N,1) , (basis(N,0)-basis(N,1)).unit())
-    target1 = tensor(basis(N,1) , (basis(N,1)).unit())
-#    target1 = tensor((basis(N,1)).unit(),(basis(3,0)-basis(N,1)).unit() , )
+#    target1 = tensor(basis(N,1) , (basis(N,1)).unit())
+    target1 = tensor((basis(N,1)).unit(),(basis(3,0)-basis(N,1)).unit() , )
     target2 = tensor((basis(N,1)).unit(),(basis(3,0)+basis(N,1)).unit() , )
     fid1 = fidelity(UT*output.states[-1]*output.states[-1].dag()*UT.dag(),target1)
     fid2 = fidelity(UT*output.states[-1]*output.states[-1].dag()*UT.dag(),target2)
@@ -270,7 +277,7 @@ def CZgate(P):
     if ang0<0:
         ang0 = ang0+360
     ang = mod(ang1-ang0,360)
-    print(P[0],P[1]/2/np.pi, fid1,fid2 , ang1,ang0,ang , exp[0][-1] , exp[1][-1] )
+    
     
     
 #==============================================================================
@@ -290,10 +297,15 @@ def CZgate(P):
         l11.append( fidelity(s11,output.states[i]) )
         l20.append( fidelity(s20,output.states[i]) )
     
-    # figure();plot(tlist,l11);xlabel('t');ylabel('P11')
-    # figure();plot(tlist,l20);xlabel('t');ylabel('P20')     
+#    figure();plot(tlist,l11);xlabel('t');ylabel('P11')
+#    figure();plot(tlist,l20);xlabel('t');ylabel('P20')     
 #==============================================================================
-    return([fid2,ang1,np.max(l11)-np.min(l11)])
+
+    print(fid1,fid2 , ang1,ang0,ang , exp[0][-1] , exp[1][-1] ,np.max(l11)-np.min(l11))
+    
+    
+#    return([fid2,ang1,np.max(l11)-np.min(l11)])
+    return(1-fid1)
 
     
 
@@ -326,7 +338,7 @@ if __name__=='__main__':
     N = 3
     
     g = 0.004 * 2 * np.pi
-    wq= np.array([5.00 , 4.70 ]) * 2 * np.pi
+    wq= np.array([5.00 , 4.65 ]) * 2 * np.pi
     eta_q=  np.array([-0.250 , -0.250]) * 2 * np.pi
     
     
@@ -357,9 +369,11 @@ if __name__=='__main__':
 #    getanglediffence(0.07 * 2 * np.pi , 100)
     
 
-#    x0 = [1.5*np.pi/np.sqrt(2)/g , 2.4048*0.07 * 2 * np.pi]
-#    result = minimize(CZgate, x0, method="Nelder-Mead",options={'disp': True})
-#    print(result.x[0] , result.x[1]/2/np.pi )
+    x0 = [1.5*np.pi/np.sqrt(2)/g , 0.003 * 2 * np.pi]
+#    cons = ({'type': 'ineq', 'fun': lambda x:  0.004 * 2 * np.pi-x[1]},)
+#    bnds = ((0, None), (0, 0.004 * 2 * np.pi))
+    result = minimize(CZgate, x0, method="Nelder-Mead",options={'disp': True,})
+    print(result.x[0] , result.x[1]/2/np.pi )
 
 
 #    t = np.arange(75,200,1)

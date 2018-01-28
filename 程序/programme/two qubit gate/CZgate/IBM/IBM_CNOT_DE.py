@@ -160,7 +160,7 @@ def CNOT(P):
     g = P[1]
     tp = P[2]
     omega =P[3]
-    D = P[4]
+    D = -0.5
     
 
     wq[1] = wq[0] - delta
@@ -169,7 +169,8 @@ def CNOT(P):
     [E,S] = H0.eigenstates()
     l11 = findstate(S,'11');l10 = findstate(S,'10');l01 = findstate(S,'01');l00 = findstate(S,'00');
 
-    ZZ = g**2/(wq[0]-wq[1])/(1-(wq[0]-wq[1])/(-eta_q[0]))
+#    ZZ = g**2/(wq[0]-wq[1])/(1-(wq[0]-wq[1])/(-eta_q[1]))
+    ZZ = E[l11]-E[l10]-E[l01]+E[l00]
 
     global H,tlist,args,options
     
@@ -216,7 +217,7 @@ def CNOT(P):
     # H = [H0,H1,H2,H3,H4,H5,H6,H7,H8]
     H =  [H0,H1,H2,H3,H4]
 
-    tlist = np.arange(0,2*tp+110,0.5)
+    tlist = np.arange(0,2*tp+110,0.6)
     options=Options()
     options.atol=1e-8
     options.rtol=1e-6
@@ -225,7 +226,7 @@ def CNOT(P):
     options.nsteps=1e6
     options.gui='True'
     options.ntraj=1000
-    options.rhs_reuse=False
+    options.rhs_reuse=True
 
     
 
@@ -251,23 +252,24 @@ def CNOT(P):
     
 
 
-    # p = Pool(4)
-   
-    # A = p.map(getfid,T)
-    # fid = [x[0] for x in A]
-    # leakage = [x[1] for x in A]
-    # outputstate = [x[2] for x in A]
-    # # fid = np.array(fid)
-    # # leakage = np.array(leakage)
-
-        
-    # p.close()
-    # p.join()
+#    p = Pool(4)
+#   
+#    A = p.map(getfid,T)
+#    fid = [x[0] for x in A]
+#    leakage = [x[1] for x in A]
+#    outputstate = [x[2] for x in A]
+#    # fid = np.array(fid)
+#    # leakage = np.array(leakage)
+#
+#        
+#    p.close()
+#    p.join()
 # #    print(P,np.mean(leakage),fid,np.mean(fid))
-    for p in T:
-        fid.append(getfid(p)[0])
-        leakage.append(getfid(p)[1])
-        outputstate.append(getfid(p)[2])
+    for phi in T:
+        A = getfid(phi)
+        fid.append(A[0])
+        leakage.append(A[1])
+        outputstate.append(A[2])
     fid = np.array(fid)
     leakage = np.array(leakage)
     outputstate = np.array(outputstate)
@@ -308,10 +310,11 @@ def CNOT(P):
 
     Ngate = np.pi/4/ZZ/(2*tp+60)
     estimate = 0
-    for j in range(10):
+    for j in range(20):
         
-        estimate += (Ufidelity>(0.99+j/1000.0))*Ngate*(j*0.05) if j !=0 else (Ufidelity>(0.99))*Ngate*(1)
+        estimate += (Ufidelity>(0.99+j/2000.0))*Ngate*(0.05) if j !=0 else (Ufidelity>(0.99))*Ngate*(1)
     
+    print(estimate,Ngate,Ufidelity)
 #
     return(-estimate)
 #    return(Error)
@@ -330,8 +333,8 @@ if __name__=='__main__':
     
     N = 3
     
-    g = 0.0017 * 2 * np.pi
-    wq= np.array([5.100 , 5.100  ]) * 2 * np.pi
+    g = 0.000889 * 2 * np.pi
+    wq= np.array([5.100 , 5.0223  ]) * 2 * np.pi
     eta_q=  np.array([-0.250 , -0.250]) * 2 * np.pi
 #    wq= np.array([5.115 , 5.253  ]) * 2 * np.pi
 #    eta_q=  np.array([-0.2876 , -0.2984]) * 2 * np.pi
@@ -342,13 +345,19 @@ if __name__=='__main__':
     E_uc0 = tensor(basis(3,2)*basis(3,2).dag() , qeye(3)) 
     E_uc1 = tensor(qeye(3) , basis(3,2)*basis(3,2).dag())
     
-    x_l = np.array([0,0.0005*2*np.pi,20,0,-1.5])
-    x_u = np.array([0.250*2*np.pi,0.005*2*np.pi,300,0.200*2*np.pi,1.5])
-    de(CNOT,n = 5,m_size = 25,f = 0.5 , cr = 0.3 ,S = 0.8 , iterate_time = 200,x_l = x_l,x_u = x_u)
+    x_l = np.array([0.100*2*np.pi,0.0005*2*np.pi,20,0.001*2*np.pi])#delta,g,tp,omega
+    x_u = np.array([0.200*2*np.pi,0.005*2*np.pi,200,0.200*2*np.pi])
+    de(CNOT,n = 4,m_size = 25,f = 0.9 , cr = 0.5 ,S = 0.9 , iterate_time = 400,x_l = x_l,x_u = x_u,inputfile = '398_2018012309_17_44.mat')
     
+#    x0 = [4.84557618e-01 ,  4.99390060e-03 ,  2.00000000e+02 ,  4.50720564e-01]
+#    result = minimize(CNOT, x0, method="Nelder-Mead",options={'disp': True})
+#    print(result)
+#    print(result.val)
 
-
-#    fid = CNOT([51.35037378 ,  0.53879866,0,0])
+#    x0 = (x_l+x_u)/2
+#    result = minimize(CNOT, x0, method="Nelder-Mead",options={'disp': True})
+#    print(result.x)
+#    fid = CNOT([207.74 ,  0.363536,0,0])
 #    fid = CNOT([1126.5  , 0.066357*2*np.pi,0,0])
 #    fid = CNOT([83.30,0.02816*2*np.pi,0,0])
 #    print(fid)

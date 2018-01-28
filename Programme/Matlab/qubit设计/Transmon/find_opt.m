@@ -1,4 +1,5 @@
 function find_opt(Cq1,R1,anhamc,E01c)
+%%在Cq1和R1附近寻找最符合anhamc和E01c的Cq和R的值
 
 Ec1 = C_E(Cq1);
 Ej1 = R_E(R1);

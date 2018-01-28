@@ -154,7 +154,7 @@ def Operator_View(M,lab):
 
 def CNOT(P):
     tp = P[0]
-#    omega =0.080*2*np.pi
+    omega =0.08965*2*np.pi
 #    xita1 = P[2]
 #    xita2 = P[3]
 
@@ -218,7 +218,7 @@ def CNOT(P):
     options.nsteps=1e6
     options.gui='True'
     options.ntraj=1000
-    options.rhs_reuse=False
+    options.rhs_reuse=True
 
     
 
@@ -258,8 +258,9 @@ def CNOT(P):
 #     p.join()
 # #    print(P,np.mean(leakage),fid,np.mean(fid))
     for p in T:
-        fid.append(getfid(p)[0])
-        leakage.append(getfid(p)[1])
+        A = getfid(p)
+        fid.append(A[0])
+        leakage.append(A[1])
         outputstate.append(getfid(p)[2])
     fid = np.array(fid)
     leakage = np.array(leakage)
@@ -307,19 +308,23 @@ def CNOT(P):
 #    return(Error)
 #
 
-def FreqTest(delta):
-    wq[1] = wq[0] - delta
-    global omega,H0,E,S,l11,l10,l01,l00
-    print(wq[1]/2/np.pi)
+def FreqTest(glist):
+    global H0,E,S,l11,l10,l01,l00
+    
+#    g = glist
+
+    wq[1] = wq[0]-glist
+    
+    
     H0= (wq[0]) * sm0.dag()*sm0 + (wq[1]) * sm1.dag()*sm1 + eta_q[0]*E_uc0 + eta_q[1]*E_uc1 + g * (sm0.dag()+sm0) * (sm1.dag()+sm1)
     [E,S] = H0.eigenstates()
     l11 = findstate(S,'11');l10 = findstate(S,'10');l01 = findstate(S,'01');l00 = findstate(S,'00');
-    omega = 0.4*delta
+    
    
-    x0 = [np.pi*(wq[0]-wq[1])/2/omega/g/2/1.5]
+    x0 = [163.98]
     result = minimize(CNOT, x0, method="Nelder-Mead",options={'disp': True,'maxiter':40})
 
-    ZZ = g**2/(wq[0]-wq[1])/(1-(wq[0]-wq[1])/(-eta_q[0]))
+    ZZ = 2*g**2/(wq[0]-wq[1])/((wq[0]-wq[1])/(2*eta_q[1])-eta_q[1]/2/(wq[0]-wq[1]))
 
     print(result.x,1-result.fun,ZZ)
 
@@ -336,8 +341,8 @@ if __name__=='__main__':
     
     N = 3
     
-    g = 0.0017 * 2 * np.pi
-    wq= np.array([5.100 , 5.100  ]) * 2 * np.pi
+    g = 0.0006804 * 2 * np.pi
+    wq= np.array([5.100 , 4.9494  ]) * 2 * np.pi
     eta_q=  np.array([-0.250 , -0.250]) * 2 * np.pi
 #    wq= np.array([5.115 , 5.253  ]) * 2 * np.pi
 #    eta_q=  np.array([-0.2876 , -0.2984]) * 2 * np.pi
@@ -386,9 +391,14 @@ if __name__=='__main__':
     # figure();plot(omegalist/2/np.pi,fidlist);xlabel('omega');ylabel('fidelity')
     # title(str(g/2/np.pi)[0:8]+'_'+str((wq[0]-wq[1])/2/np.pi)[0:6])
     # plt.savefig('f_omega_'+str(g/2/np.pi)[0:8]+'_'+str((wq[0]-wq[1])/2/np.pi)[0:6]+'.png')
+#    delta = 0.100*2*np.pi
 
-    deltalist = np.linspace(0.110,0.200,19)*2*np.pi
-    p = Pool(26)
+#    glist = np.linspace(0.9*0.0006804,1.1*0.0006804,26)*2*np.pi
+#    gT = 0.0006804*2*np.pi
+
+    deltalist = np.linspace(0.9*0.15056,1.1*0.15056,26)*2*np.pi
+    deltaT = 0.15056*2*np.pi
+    p = Pool(6)
     A = p.map(FreqTest,deltalist)
     p.close()
     p.join()
@@ -398,21 +408,37 @@ if __name__=='__main__':
 
     testlist = np.pi/4/ZZlist/(2*tplist+60)
 
-    np.save('Sdelta_'+str(g/2/np.pi)[0:8],deltalist)
-    np.save('Stp_'+str(g/2/np.pi)[0:8],tplist)
-    np.save('Sfidelity_'+str(g/2/np.pi)[0:8],fidlist)
-    np.save('SZZ_'+str(g/2/np.pi)[0:8],ZZlist)
-    np.save('Stest_'+str(g/2/np.pi)[0:8],testlist)
+    np.save('delta_'+str(delta/2/np.pi)[0:8],deltalist)
+    np.save('tp_'+str(delta/2/np.pi)[0:8],tplist)
+    np.save('fidelity_'+str(delta/2/np.pi)[0:8],fidlist)
+    np.save('ZZ_'+str(delta/2/np.pi)[0:8],ZZlist)
+    np.save('test_'+str(delta/2/np.pi)[0:8],testlist)
     
 
-    figure();plot(deltalist/2/np.pi,testlist);xlabel('delta');ylabel('number of  CNOT gate');title(str(g/2/np.pi)[0:8])
-    plt.savefig('SN_delta_'+str(g/2/np.pi)[0:8]+'.png')
-    figure();plot(deltalist/2/np.pi,fidlist);xlabel('delta');ylabel('fidelity');title(str(g/2/np.pi)[0:8])
-    plt.savefig('Sfidelity_delta_'+str(g/2/np.pi)[0:8]+'.png')
-    figure();plot(deltalist/2/np.pi,tplist);xlabel('delta');ylabel('t');title(str(g/2/np.pi)[0:8])
-    plt.savefig('Stp_delta_'+str(g/2/np.pi)[0:8]+'.png')
-    figure();plot(deltalist/2/np.pi,2*tplist+60);xlabel('delta');ylabel('t');title(str(g/2/np.pi)[0:8])
-    plt.savefig('Stotal_delta_'+str(g/2/np.pi)[0:8]+'.png')
+    figure();plot(deltalist/2/np.pi,testlist);xlabel('delta');ylabel('number of  CNOT gate');title(str(deltaT/2/np.pi)[0:8])
+    plt.savefig('N_delta_'+str(deltaT/2/np.pi)[0:8]+'.png')
+    figure();plot(deltalist/2/np.pi,fidlist);xlabel('delta');ylabel('fidelity');title(str(deltaT/2/np.pi)[0:8])
+    plt.savefig('fidelity_delta_'+str(deltaT/2/np.pi)[0:8]+'.png')
+    figure();plot(deltalist/2/np.pi,tplist);xlabel('delta');ylabel('t');title(str(deltaT/2/np.pi)[0:8])
+    plt.savefig('tp_delta_'+str(deltaT/2/np.pi)[0:8]+'.png')
+    figure();plot(deltalist/2/np.pi,2*tplist+60);xlabel('delta');ylabel('t');title(str(deltaT/2/np.pi)[0:8])
+    plt.savefig('total_delta_'+str(deltaT/2/np.pi)[0:8]+'.png')
+
+#    np.save('g_'+str(delta/2/np.pi)[0:8],glist)
+#    np.save('tp_'+str(delta/2/np.pi)[0:8],tplist)
+#    np.save('fidelity_'+str(delta/2/np.pi)[0:8],fidlist)
+#    np.save('ZZ_'+str(delta/2/np.pi)[0:8],ZZlist)
+#    np.save('test_'+str(delta/2/np.pi)[0:8],testlist)
+#    
+#
+#    figure();plot(glist/2/np.pi,testlist);xlabel('g');ylabel('number of  CNOT gate');title(str(gT/2/np.pi)[0:8])
+#    plt.savefig('N_g_'+str(gT/2/np.pi)[0:8]+'.png')
+#    figure();plot(glist/2/np.pi,fidlist);xlabel('g');ylabel('fidelity');title(str(gT/2/np.pi)[0:8])
+#    plt.savefig('fidelity_g_'+str(gT/2/np.pi)[0:8]+'.png')
+#    figure();plot(glist/2/np.pi,tplist);xlabel('g');ylabel('t');title(str(gT/2/np.pi)[0:8])
+#    plt.savefig('tp_g_'+str(gT/2/np.pi)[0:8]+'.png')
+#    figure();plot(glist/2/np.pi,2*tplist+60);xlabel('g');ylabel('t');title(str(gT/2/np.pi)[0:8])
+#    plt.savefig('total_g_'+str(gT/2/np.pi)[0:8]+'.png')
 
 
     

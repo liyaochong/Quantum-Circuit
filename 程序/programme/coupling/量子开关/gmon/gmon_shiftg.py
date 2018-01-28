@@ -105,7 +105,7 @@ def CZgate(P):
     
     
 
-    print(P[0],P[1]/2/np.pi, fid1 , ang1,exp[0][-1] , exp[1][-1],leakage[0],leakage[1] )
+    
     
     
 #==============================================================================
@@ -175,7 +175,10 @@ def CZgate(P):
 #    figure();plot(tlist,l20_uc);xlabel('t');ylabel('P20_uc')  
 #    figure();plot(tlist,l02_uc);xlabel('t');ylabel('P02_uc')  
 #==============================================================================
+#    
+    print(P[0],P[1]/2/np.pi, fid1 , ang1,leakage[0],leakage[1],np.max(l11_c)-np.min(l11_c) )
     return([fid1,ang1,np.max(l11_c)-np.min(l11_c)])
+#    return(1-fid1+(ang1-180)/180+leakage[0]+leakage[1]+np.max(l11_c)-np.min(l11_c))
 
 if __name__=='__main__':
     starttime=time.time()
@@ -188,25 +191,44 @@ if __name__=='__main__':
     lam3 = -0.04;
     resolution = 1024;
     
+    '''
+    Hx
+    '''
+#    ti=np.linspace(0,1,resolution)
+#    han2 = np.vectorize(lambda ti:(1-lam3)*(1-np.cos(2*np.pi*ti))+lam2*(1-np.cos(4*np.pi*ti))+lam3*(1-np.cos(6*np.pi*ti)))
+#    han2 = han2(ti)
+#    thsl=thi+(thf-thi)*han2/np.max(han2)   
+#    tlu = np.cumsum(np.cos(thsl))*ti[1]
+#    tlu=tlu-tlu[0]
+#    ti=np.linspace(0, tlu[-1], resolution)
+#    th=interpolate.interp1d(tlu,thsl,'slinear')
+#    th = th(ti)
+#    th=np.tan(th)
+#    th=th-th[0]
+#    th=th/np.max(th)
+    
+    '''
+    Hz
+    '''
     ti=np.linspace(0,1,resolution)
-    han2 = np.vectorize(lambda ti:(1-lam3)*(1-np.cos(2*np.pi*ti))+lam2*(1-np.cos(4*np.pi*ti))+lam3*(1-np.cos(6*np.pi*ti)))
+    han2 = np.vectorize(lambda ti:(1-lam3)*(1-cos(2*pi*ti))+lam2*(1-cos(4*pi*ti))+lam3*(1-cos(6*pi*ti)))
     han2 = han2(ti)
-    thsl=thi+(thf-thi)*han2/np.max(han2)   
-    tlu = np.cumsum(np.cos(thsl))*ti[1]
+    thsl=thi+(thf-thi)*han2/max(han2)
+    tlu = np.cumsum(np.sin(thsl))*ti[1]
     tlu=tlu-tlu[0]
     ti=np.linspace(0, tlu[-1], resolution)
     th=interpolate.interp1d(tlu,thsl,'slinear')
     th = th(ti)
-    th=np.tan(th)
+    th=1/np.tan(th)
     th=th-th[0]
-    th=th/np.max(th)
+    th=th/min(th)
     
     global H0
     
     N = 3
     
 #    g = 0.004 * 2 * np.pi
-    wq= np.array([5.00 , 4.71 ]) * 2 * np.pi
+    wq= np.array([5.00 , 4.62 ]) * 2 * np.pi
     eta_q=  np.array([-0.250 , -0.250]) * 2 * np.pi
     
     
@@ -231,7 +253,7 @@ if __name__=='__main__':
     ang=np.zeros(shape=(len(t),len(delta)))
     leakage=np.zeros(shape=(len(t),len(delta)))
     
-    p = Pool(16)
+    p = Pool(24)
     
     for i in range(0,len(t)):
         P = [[t[i],delta[j]] for j in range(0,len(delta))]
@@ -248,21 +270,21 @@ if __name__=='__main__':
     pcolormesh(delta/2/np.pi,t,fid)
     xlabel('delta')
     ylabel('t')
-    title('fid')
+    title('fidz')
     plt.colorbar()
     
     figure()
     pcolormesh(delta/2/np.pi,t,ang)
     xlabel('delta')
     ylabel('t')
-    title('ang')
+    title('angz')
     plt.colorbar()
     
     figure()
     pcolormesh(delta/2/np.pi,t,leakage)
     xlabel('delta')
     ylabel('t')
-    title('leakage')
+    title('leakagez')
     plt.colorbar()
     
     leakage = np.array(leakage)
@@ -273,9 +295,9 @@ if __name__=='__main__':
     maxfid = np.max(fid)
     indexfid = np.where(fid == maxfid)
     print(maxfid,t[indexfid[0]],delta[indexfid[1]])
-    np.save('gmon_4.71_fid',fid) 
-    np.save('gmon_4.71_ang',ang) 
-    np.save('gmon_4.71_leakage',leakage) 
+    np.save('gmonz_4.62_fid',fid) 
+    np.save('gmonz_4.62_ang',ang) 
+    np.save('gmonz_4.62_leakage',leakage) 
 #==============================================================================
 
 

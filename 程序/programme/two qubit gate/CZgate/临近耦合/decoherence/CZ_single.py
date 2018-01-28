@@ -91,12 +91,12 @@ def CZgate(P):
     options.rhs_reuse=False
     
 #    psi0 = (bastate[0]+bastate[2]+bastate[3]-bastate[9]).unit()
-    psi0 = (bastate[1]-bastate[4]).unit()
+#    psi0 = (bastate[1]-bastate[4]).unit()
 #    psi0 = bastate[1]
     
     
 #    psi0 = tensor( (basis(3,0)+basis(3,1)).unit() , (basis(3,0)+basis(3,1)).unit())
-#    psi0 = tensor( (basis(3,1)).unit() , (basis(3,0)+basis(3,1)).unit())
+    psi0 = tensor( (basis(3,0)).unit() , (basis(3,0)+basis(3,1)).unit())
 #    psi0 = tensor( (basis(3,0)+basis(3,1)).unit() , (basis(3,0)).unit())
 #    psi0 = tensor( (basis(3,0)).unit() , (basis(3,1)).unit())
 
@@ -153,9 +153,9 @@ def CZgate(P):
 #    UT = (1j*H0*tlist[-1]).expm()
     
 
-    target = (bastate[1]+bastate[4]).unit()
+#    target = (bastate[1]+bastate[4]).unit()
 #    target = (bastate[4]).unit()
-#    target = tensor( (basis(3,1)).unit() , (basis(3,0)-basis(3,1)).unit())
+    target = tensor( (basis(3,0)).unit() , (basis(3,0)+basis(3,1)).unit())
     
     fid = fidelity(UT*result.states[-1]*result.states[-1].dag()*UT.dag(),target)
     angle = np.angle((psi0.dag()*UT*result.states[-1])[0])
@@ -173,7 +173,7 @@ def CZgate(P):
 #    angle = np.angle((psi0.dag()*UT*result.states[-1])[0])
 #    print('fidelity = ',fid,P,angle/np.pi*180)
     #==============================================================================
-    return(fid)
+    return(fid,UT*result.states[-1])
     
     
 def decoherence(T):
@@ -216,24 +216,24 @@ def decoherence(T):
     options.rhs_reuse=False
     
 #    psi0 = (bastate[0]+bastate[2]+bastate[3]-bastate[9]).unit()
-    psi0 = (bastate[1]-bastate[4]).unit()
+#    psi0 = (bastate[1]-bastate[4]).unit()
 #    psi0 = bastate[1]
     
     
 #    psi0 = tensor( (basis(3,0)+basis(3,1)).unit() , (basis(3,0)+basis(3,1)).unit())
-#    psi0 = tensor( (basis(3,1)).unit() , (basis(3,0)+basis(3,1)).unit())
+    psi0 = tensor( (basis(3,0)).unit() , (basis(3,0)+basis(3,1)).unit())
 #    psi0 = tensor( (basis(3,0)+basis(3,1)).unit() , (basis(3,0)).unit())
 #    psi0 = tensor( (basis(3,0)).unit() , (basis(3,1)).unit())
 
     c_op_list = []
     gamma = 1.0/T1
-    gamma_phi = 1.0/T2
+    gamma_phi = 1.0/T2-1/2/T1
     c_op_list.append(np.sqrt(gamma * (1+n_th)) * sm[0])
     c_op_list.append(np.sqrt(gamma * n_th) * sm[0].dag())
-    c_op_list.append(np.sqrt(gamma_phi) * sm[0].dag()*sm[0])
+    c_op_list.append(np.sqrt(2*1/2000) * sm[0].dag()*sm[0])
     c_op_list.append(np.sqrt(gamma * (1+n_th)) * sm[1])
     c_op_list.append(np.sqrt(gamma * n_th) * sm[1].dag())
-    c_op_list.append(np.sqrt(gamma_phi) * sm[1].dag()*sm[1])
+    c_op_list.append(np.sqrt(2*gamma_phi) * sm[1].dag()*sm[1])
     
     tlist = np.linspace(0,tp,tp+1)
 
@@ -285,12 +285,15 @@ def decoherence(T):
     UT = tensor(U0,U1)
 #    UT = (1j*H0*tlist[-1]).expm()
     
-
-    target = (bastate[1]+bastate[4]).unit()
+#
+#    target = (bastate[1]+bastate[4]).unit()
 #    target = (bastate[4]).unit()
-#    target = tensor( (basis(3,1)).unit() , (basis(3,0)-basis(3,1)).unit())
+    target = tensor( (basis(3,0)).unit() , (basis(3,0)+basis(3,1)).unit())
     
-    fid = fidelity(UT*result.states[-1]*result.states[-1].dag()*UT.dag(),target)
+    fid = fidelity(UT*result.states[-1]*UT.dag(),target)
+#    fid = fidelity(UT*result.states[-1]*result.states[-1].dag()*UT.dag(),target)
+#    fid = fidelity(result.states[-1],UT.dag()*target)
+    
 #    angle = np.angle((psi0.dag()*UT*result.states[-1])[0])
     print('fidelity = ',fid,T)
     
@@ -455,16 +458,20 @@ if __name__=='__main__':
 #    
 #    figure()
 #    plot((A - 4.97*2*np.pi)/2/np.pi,fid)
-      
-    T2 = np.linspace(1,20,20)*1000
-    T = [[20*1000,T2[i]] for i in range(0,len(T2))]
-    p = Pool(12)
+
+#    decoherence([10*1000,0.098*1000])
+
+    a = np.linspace(0.1,1,16)*1000
+    b = np.linspace(1,12,12)*1000
+    T2 = np.append(a,b)
+    T = [[10*1000,T2[i]] for i in range(0,len(T2))]
+    p = Pool(14)
     
 
     z = p.map(decoherence,T)
     p.close()
     p.join()
-    figure();plot(T2,z);xlabel('T2');ylabel('fidelity');title('T1 = 20')
+    figure();plot(T2,z);xlabel('T2');ylabel('fidelity');title('0+  T1 = 10')
 
 
     endtime  = time.time()
